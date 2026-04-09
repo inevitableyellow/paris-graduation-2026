@@ -119,7 +119,8 @@
         <th>Relationship</th>
         <th>Code</th>
         <th>Status</th>
-        <th>Ticket</th>
+        <th>Official Ticket</th>
+        <th>Release</th>
         <th></th>
       </tr>
     </thead>
@@ -182,14 +183,23 @@
     tbody.innerHTML = "";
     guests.forEach(g => {
       const tr = document.createElement("tr");
+      const hasTicket = !!g.officialTicketUrl;
       tr.innerHTML = `
         <td>${g.name || "<span style='color:var(--dim)'>Not yet set</span>"}</td>
         <td style="color:var(--muted)">${g.relationship || "–"}</td>
         <td><span class="mono-sm">${g.code}</span></td>
         <td>${statusBadge(g.status)}</td>
+        <td>
+          ${hasTicket
+            ? `<span class="badge b-released" style="margin-right:6px;">Uploaded ✓</span>
+               <button class="btn-outline" onclick="uploadTicket('${g.code}')">Replace</button>`
+            : `<button class="btn-outline" onclick="uploadTicket('${g.code}')">Upload ticket</button>`}
+          <input type="file" id="file-${g.code}" accept="image/*,application/pdf" style="display:none" onchange="handleTicketUpload(event,'${g.code}')" />
+        </td>
         <td>${g.ticketReleased
           ? '<span class="badge b-released">Released</span>'
-          : '<button class="btn-outline" onclick="releaseTicket(\''+g.code+'\')">Release</button>'}</td>
+          : `<button class="btn-outline" ${!hasTicket ? 'disabled title="Upload official ticket first"' : ''} onclick="releaseTicket('${g.code}')"
+              style="${!hasTicket ? 'opacity:0.4;cursor:not-allowed;' : ''}">Release</button>`}</td>
         <td><button class="btn-sm-red" onclick="removeGuest('${g.code}')">Remove</button></td>
       `;
       tbody.appendChild(tr);
@@ -246,6 +256,34 @@
       msgEl.textContent = "Error adding guest: " + err.message;
       msgEl.className = "msg error";
       msgEl.classList.remove("hidden");
+    }
+  };
+
+  window.uploadTicket = function(code) {
+    document.getElementById(`file-${code}`).click();
+  };
+
+  window.handleTicketUpload = async function(event, code) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const maxSize = 20 * 1024 * 1024;
+    if (file.size > maxSize) { alert("File is too large. Please use a file under 20MB."); return; }
+
+    try {
+      const { ref: storageRef, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
+      const { storage } = await import("../js/firebase.js");
+
+      const ext      = file.name.split(".").pop();
+      const fileRef  = storageRef(storage, `tickets/${code}.${ext}`);
+      await uploadBytes(fileRef, file);
+      const url = await getDownloadURL(fileRef);
+
+      await updateDoc(doc(db, "guests", code), { officialTicketUrl: url, officialTicketType: file.type });
+      await loadGuests();
+    } catch (err) {
+      console.error(err);
+      alert("Upload failed: " + err.message);
     }
   };
 
