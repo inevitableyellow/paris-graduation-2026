@@ -165,6 +165,37 @@
           <button class="btn-secondary" onclick="switchTab('ticket')">View my ticket →</button>
           <br>
           <button id="change-rsvp-btn" class="btn-secondary" onclick="changeRsvp()" style="margin-top:0.5rem;border-color:rgba(255,255,255,0.2);color:var(--text-muted);font-size:13px;">Change my RSVP</button>
+
+          <!-- CHILD GUEST SECTION -->
+          <div id="child-section" class="hidden" style="margin-top:2rem;text-align:left;border-top:0.5px solid rgba(255,203,5,0.2);padding-top:1.5rem;">
+            <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.75rem;">Bringing a child?</div>
+
+            <div id="child-form" >
+              <div class="form-group">
+                <label class="form-label">Child's name</label>
+                <input id="child-name" class="form-input" type="text" placeholder="Full name" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Child's age</label>
+                <input id="child-age" class="form-input" type="number" min="0" max="17" placeholder="Age in years" style="width:120px;" />
+              </div>
+              <div id="child-code-wrap" class="hidden">
+                <div class="form-group">
+                  <label class="form-label">Child's invite code</label>
+                  <input id="child-code" class="form-input" type="text" placeholder="e.g. GRAD-XXXX" style="font-family:var(--font-mono);letter-spacing:0.08em;" />
+                </div>
+                <p style="font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:0.75rem;">Children over 2 require their own ticket. Enter the invite code you received for your child.</p>
+              </div>
+              <div id="child-free-note" class="hidden" style="font-size:13px;color:#5DCAA5;margin-bottom:1rem;">Children 2 and under are free and do not need a ticket! 🎉</div>
+              <div id="child-error" class="invite-error hidden"></div>
+              <button class="btn-primary" onclick="addChild()" style="font-size:13px;padding:10px 20px;">Add child guest →</button>
+            </div>
+
+            <div id="child-confirmed" class="hidden" style="background:rgba(29,158,117,0.1);border:0.5px solid rgba(29,158,117,0.3);border-radius:var(--radius-sm);padding:1rem;margin-top:0.5rem;">
+              <div style="font-size:13px;font-weight:500;color:#5DCAA5;margin-bottom:0.25rem;">Child guest added ✓</div>
+              <div style="font-size:13px;color:var(--text-muted);" id="child-confirmed-name"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -176,6 +207,7 @@
           <p>Your ticket will be available closer to graduation day. Check back soon!</p>
           <p class="ticket-pending-sub">Make sure you've completed your RSVP first.</p>
         </div>
+        <!-- PARENT TICKET -->
         <div id="ticket-card" class="ticket-card hidden">
           <div class="ticket-header">
             <div class="ticket-event">UMSI Commencement 2026</div>
@@ -201,6 +233,36 @@
           </div>
           <div class="ticket-qr-wrap">
             <div id="ticket-qr"></div>
+            <div class="ticket-qr-note">Present this QR code at the door. Single-use only.</div>
+          </div>
+          <div class="ticket-footer">paris-graduation-2026.github.io</div>
+        </div>
+        <!-- CHILD TICKET -->
+        <div id="child-ticket-card" class="ticket-card hidden" style="margin-top:1.5rem;">
+          <div class="ticket-header" style="background:#003566;">
+            <div class="ticket-event">UMSI Commencement 2026 · Child Guest</div>
+            <div class="ticket-name" id="child-ticket-name-display"></div>
+          </div>
+          <div class="ticket-details">
+            <div class="ticket-detail-row">
+              <span class="td-label">Date</span>
+              <span class="td-val">Thursday, April 30, 2026</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Time</span>
+              <span class="td-val">10:00 AM – 12:00 PM EDT</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Venue</span>
+              <span class="td-val">Crisler Center, Ann Arbor</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Ticket ID</span>
+              <span class="td-val mono" id="child-ticket-id-display"></span>
+            </div>
+          </div>
+          <div class="ticket-qr-wrap">
+            <div id="child-ticket-qr"></div>
             <div class="ticket-qr-note">Present this QR code at the door. Single-use only.</div>
           </div>
           <div class="ticket-footer">paris-graduation-2026.github.io</div>

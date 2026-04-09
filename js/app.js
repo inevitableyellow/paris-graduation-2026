@@ -65,7 +65,6 @@ window.verifyInvite = async function() {
 
     currentGuest = { code, ...snap.data() };
     sessionStorage.setItem("guestCode", code);
-
     errorEl.classList.add("hidden");
     document.getElementById("login-screen").classList.add("hidden");
     document.getElementById("main-screen").classList.remove("hidden");
@@ -234,19 +233,102 @@ function showRsvpConfirmed(status) {
   };
 
   document.getElementById("rsvp-success-msg").textContent = msgs[status] || "";
+
+  // Show child section only for in-person confirmed guests
+  const childSection = document.getElementById("child-section");
+  if (status === "confirmed" && !isDeadlinePassed()) {
+    childSection.classList.remove("hidden");
+    // If child already linked, show confirmed state
+    if (currentGuest.linkedChild) {
+      document.getElementById("child-form").classList.add("hidden");
+      document.getElementById("child-confirmed").classList.remove("hidden");
+      document.getElementById("child-confirmed-name").textContent =
+        `${currentGuest.linkedChild.name} · age ${currentGuest.linkedChild.age}`;
+    }
+  } else {
+    childSection.classList.add("hidden");
+  }
+}
+
+// ─── CHILD AGE WATCHER ────────────────────────
+document.getElementById("child-age")?.addEventListener("input", function() {
+  const age = parseInt(this.value);
+  const codeWrap = document.getElementById("child-code-wrap");
+  const freeNote = document.getElementById("child-free-note");
+  if (isNaN(age)) { codeWrap.classList.add("hidden"); freeNote.classList.add("hidden"); return; }
+  if (age <= 2)  { codeWrap.classList.add("hidden"); freeNote.classList.remove("hidden"); }
+  else           { codeWrap.classList.remove("hidden"); freeNote.classList.add("hidden"); }
+});
+
+// ─── ADD CHILD GUEST ──────────────────────────
+window.addChild = async function() {
+  const name   = document.getElementById("child-name").value.trim();
+  const age    = parseInt(document.getElementById("child-age").value);
+  const code   = document.getElementById("child-code")?.value.trim().toUpperCase();
+  const errEl  = document.getElementById("child-error");
+
+  errEl.classList.add("hidden");
+
+  if (!name) { errEl.textContent = "Please enter the child's name."; errEl.classList.remove("hidden"); return; }
+  if (isNaN(age) || age < 0) { errEl.textContent = "Please enter a valid age."; errEl.classList.remove("hidden"); return; }
+
+  // Under 2 — no ticket needed
+  if (age <= 2) {
+    currentGuest.linkedChild = { name, age, needsTicket: false };
+    await updateDoc(doc(db, "guests", currentGuest.code), { linkedChild: { name, age, needsTicket: false } });
+    showChildConfirmed(name, age);
+    return;
+  }
+
+  // Over 2 — verify their invite code
+  if (!code) { errEl.textContent = "Please enter the child's invite code."; errEl.classList.remove("hidden"); return; }
+
+  try {
+    const snap = await getDoc(doc(db, "guests", code));
+    if (!snap.exists()) {
+      errEl.textContent = "That invite code doesn't match our guest list.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (code === currentGuest.code) {
+      errEl.textContent = "That's your own invite code — please enter the child's code.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+
+    // Link child to parent
+    await updateDoc(doc(db, "guests", code), { linkedTo: currentGuest.code, name, status: "confirmed" });
+    await updateDoc(doc(db, "guests", currentGuest.code), { linkedChild: { name, age, code, needsTicket: true } });
+
+    currentGuest.linkedChild = { name, age, code, needsTicket: true };
+    showChildConfirmed(name, age);
+
+  } catch (err) {
+    console.error(err);
+    errEl.textContent = "Something went wrong. Please try again.";
+    errEl.classList.remove("hidden");
+  }
+};
+
+function showChildConfirmed(name, age) {
+  document.getElementById("child-form").classList.add("hidden");
+  document.getElementById("child-confirmed").classList.remove("hidden");
+  document.getElementById("child-confirmed-name").textContent = `${name} · age ${age}`;
 }
 
 // ─── TICKET DISPLAY ───────────────────────────
-function renderTicket() {
+async function renderTicket() {
   if (!currentGuest) return;
 
-  const pendingEl = document.getElementById("ticket-pending-msg");
-  const cardEl    = document.getElementById("ticket-card");
+  const pendingEl    = document.getElementById("ticket-pending-msg");
+  const cardEl       = document.getElementById("ticket-card");
+  const childCardEl  = document.getElementById("child-ticket-card");
 
   // Show ticket only if released by admin AND guest confirmed in person
   if (!currentGuest.ticketReleased || currentGuest.status !== "confirmed") {
     pendingEl.classList.remove("hidden");
     cardEl.classList.add("hidden");
+    childCardEl.classList.add("hidden");
     return;
   }
 
@@ -256,25 +338,39 @@ function renderTicket() {
   document.getElementById("ticket-name-display").textContent = currentGuest.name || "Guest";
   document.getElementById("ticket-id-display").textContent   = currentGuest.ticketId || currentGuest.code;
 
-  // Generate QR code pointing to ticket verification URL
+  // Generate QR code
   const qrData = `https://inevitableyellow.github.io/paris-graduation-2026/verify.html?id=${currentGuest.ticketId || currentGuest.code}`;
-  const qrWrap = document.getElementById("ticket-qr");
-  qrWrap.innerHTML = "";
+  generateQR("ticket-qr", qrData);
 
-  // Use QRCode.js from CDN
-  const script = document.createElement("script");
-  script.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
-  script.onload = () => {
-    new QRCode(qrWrap, {
-      text:   qrData,
-      width:  160,
-      height: 160,
-      colorDark:  "#00274C",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
-  };
-  document.head.appendChild(script);
+  // Child ticket — show if linked child with ticket and released
+  if (currentGuest.linkedChild?.needsTicket && currentGuest.linkedChild?.code) {
+    try {
+      const childSnap = await getDoc(doc(db, "guests", currentGuest.linkedChild.code));
+      if (childSnap.exists()) {
+        const child = childSnap.data();
+        if (child.ticketReleased) {
+          childCardEl.classList.remove("hidden");
+          document.getElementById("child-ticket-name-display").textContent = currentGuest.linkedChild.name;
+          document.getElementById("child-ticket-id-display").textContent   = child.ticketId || currentGuest.linkedChild.code;
+          const childQrData = `https://inevitableyellow.github.io/paris-graduation-2026/verify.html?id=${child.ticketId || currentGuest.linkedChild.code}`;
+          generateQR("child-ticket-qr", childQrData);
+        }
+      }
+    } catch (err) { console.error("Child ticket error:", err); }
+  }
+}
+
+function generateQR(elementId, data) {
+  const wrap = document.getElementById(elementId);
+  wrap.innerHTML = "";
+  if (window.QRCode) {
+    new QRCode(wrap, { text: data, width: 160, height: 160, colorDark: "#00274C", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+  } else {
+    const script = document.createElement("script");
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+    script.onload = () => new QRCode(wrap, { text: data, width: 160, height: 160, colorDark: "#00274C", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+    document.head.appendChild(script);
+  }
 }
 
 // ─── PHOTO UPLOAD ─────────────────────────────
