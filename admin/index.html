@@ -133,21 +133,26 @@
     collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ── ADMIN PASSWORD (change this!) ──────────────
-  // For better security, store this as a hashed value or use Firebase Auth
-  const ADMIN_PASSWORD = "paris2026admin";
+  // ── ADMIN PASSWORD HASH (SHA-256) ──────────────
+  const ADMIN_PASSWORD_HASH = "d5e4f8d3e37d6eaf63a7f6fe0072fe7986ec81f16047d836a755d19c52c8d2b8";
   // ────────────────────────────────────────────────
 
   let guests = [];
 
-  window.adminLogin = function() {
+  window.adminLogin = async function() {
     const pass = document.getElementById("admin-pass").value;
-    if (pass === ADMIN_PASSWORD) {
+    const msgEl = document.getElementById("admin-login-err");
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pass);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    if (hashHex === ADMIN_PASSWORD_HASH) {
       document.getElementById("admin-login").classList.add("hidden");
       document.getElementById("admin-panel").classList.remove("hidden");
       loadGuests();
     } else {
-      document.getElementById("admin-login-err").classList.remove("hidden");
+      msgEl.classList.remove("hidden");
     }
   };
 
