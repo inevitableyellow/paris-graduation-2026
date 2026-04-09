@@ -1,0 +1,20 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Guests — readable only if you know your own code, not listable
+    match /guests/{code} {
+      allow get: if true;       // code-gated on the client
+      allow list: if false;     // no one can enumerate all guests
+      allow write: if false;    // only admin SDK (via admin panel) can write
+    }
+
+    // Photos — any authenticated guest can read/write
+    // (client verifies invite code before showing the upload UI)
+    match /photos/{photoId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+  }
+}

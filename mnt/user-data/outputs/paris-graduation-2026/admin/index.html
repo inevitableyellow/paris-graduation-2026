@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Paris's Graduation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #00274C; --maize: #FFCB05; --maize-dim: rgba(255,203,5,0.12);
+      --white: #fff; --bg: #0a0f1a;
+      --border: rgba(255,203,5,0.2); --subtle: rgba(255,255,255,0.07);
+      --muted: rgba(255,255,255,0.5); --dim: rgba(255,255,255,0.3);
+      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--white); min-height: 100vh; padding: 2rem 1.25rem; }
+    .page { max-width: 720px; margin: 0 auto; }
+    .admin-header { border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+    .admin-header h1 { font-size: 20px; font-weight: 500; color: var(--maize); }
+    .admin-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    .section-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--maize); opacity: 0.7; margin-bottom: 0.75rem; }
+
+    /* ADD GUEST FORM */
+    .add-form { background: var(--subtle); border: 0.5px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem; }
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+    .form-row input { flex: 1; min-width: 140px; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.15); border-radius: 7px; padding: 9px 12px; color: var(--white); font-family: var(--font); font-size: 13px; outline: none; }
+    .form-row input:focus { border-color: var(--maize); }
+    .form-row input::placeholder { color: var(--dim); }
+    .btn { background: var(--maize); color: var(--navy); border: none; border-radius: 7px; padding: 9px 16px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .btn:hover { background: #e6b800; }
+    .btn-outline { background: transparent; color: var(--maize); border: 0.5px solid var(--maize); border-radius: 7px; padding: 6px 12px; font-family: var(--mono); font-size: 11px; cursor: pointer; }
+    .btn-outline:hover { background: var(--maize-dim); }
+    .btn-sm-red { background: transparent; color: #f09595; border: 0.5px solid rgba(240,149,149,0.3); border-radius: 6px; padding: 5px 10px; font-family: var(--mono); font-size: 11px; cursor: pointer; }
+    .btn-sm-red:hover { background: rgba(240,149,149,0.1); }
+    .code-preview { font-family: var(--mono); font-size: 12px; color: var(--maize); background: var(--maize-dim); padding: 6px 10px; border-radius: 6px; display: inline-block; margin-top: 6px; letter-spacing: 0.06em; }
+
+    /* GUEST TABLE */
+    .guest-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 2rem; }
+    .guest-table th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0 8px 10px; border-bottom: 0.5px solid var(--border); }
+    .guest-table td { padding: 10px 8px; border-bottom: 0.5px solid rgba(255,255,255,0.05); vertical-align: middle; }
+    .guest-table tr:last-child td { border-bottom: none; }
+    .badge { font-family: var(--mono); font-size: 11px; padding: 3px 8px; border-radius: 999px; display: inline-block; }
+    .b-confirmed { background: rgba(29,158,117,0.18); color: #5DCAA5; }
+    .b-virtual   { background: rgba(55,138,221,0.18); color: #85B7EB; }
+    .b-pending   { background: rgba(239,159,39,0.18); color: #EF9F27; }
+    .b-declined  { background: rgba(226,75,74,0.18);  color: #E24B4A; }
+    .b-released  { background: rgba(255,203,5,0.18);  color: var(--maize); }
+    .mono-sm { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+    /* STATS */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 2rem; }
+    .stat { background: var(--subtle); border: 0.5px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+    .stat-num { font-size: 28px; font-weight: 500; color: var(--maize); font-family: var(--mono); }
+    .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    .msg { font-size: 13px; color: var(--muted); margin-top: 8px; }
+    .msg.success { color: #5DCAA5; }
+    .msg.error { color: #f09595; }
+    .hidden { display: none !important; }
+
+    /* LOGIN */
+    #admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; text-align: center; }
+    #admin-login h2 { font-size: 20px; font-weight: 500; color: var(--maize); }
+    #admin-login input { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 11px 16px; color: var(--white); font-family: var(--font); font-size: 14px; outline: none; width: 260px; text-align: center; }
+    #admin-login input:focus { border-color: var(--maize); }
+  </style>
+</head>
+<body>
+
+<!-- ADMIN LOGIN -->
+<div id="admin-login">
+  <h2>Admin Access</h2>
+  <p style="font-size:13px;color:rgba(255,255,255,0.45);">Enter your admin password to continue</p>
+  <input id="admin-pass" type="password" placeholder="Password" />
+  <button class="btn" onclick="adminLogin()">Enter →</button>
+  <div id="admin-login-err" class="msg error hidden">Incorrect password.</div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="page hidden">
+  <div class="admin-header">
+    <h1>Paris's Graduation · Admin</h1>
+    <p>Manage guests, invite codes, and ticket release</p>
+  </div>
+
+  <!-- STATS -->
+  <div class="section-title">Overview</div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="s-total">–</div><div class="stat-label">Total guests</div></div>
+    <div class="stat"><div class="stat-num" id="s-confirmed">–</div><div class="stat-label">Confirmed</div></div>
+    <div class="stat"><div class="stat-num" id="s-pending">–</div><div class="stat-label">Pending</div></div>
+    <div class="stat"><div class="stat-num" id="s-tickets">–</div><div class="stat-label">Tickets left</div></div>
+  </div>
+
+  <!-- ADD GUEST -->
+  <div class="section-title">Add a guest</div>
+  <div class="add-form">
+    <div class="form-row">
+      <input id="new-name" placeholder="Full name" />
+      <input id="new-rel"  placeholder="Relationship (e.g. Mum)" />
+      <button class="btn" onclick="addGuest()">Generate invite</button>
+    </div>
+    <div id="new-code-preview" class="hidden">
+      Code generated: <span class="code-preview" id="new-code-val"></span>
+      <span style="font-size:12px;color:var(--muted);margin-left:10px;">Send this to your guest</span>
+    </div>
+    <div id="add-msg" class="msg hidden"></div>
+  </div>
+
+  <!-- GUEST LIST -->
+  <div class="section-title">Guest list</div>
+  <table class="guest-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Relationship</th>
+        <th>Code</th>
+        <th>Status</th>
+        <th>Ticket</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="guest-tbody"></tbody>
+  </table>
+</div>
+
+<script type="module">
+  import { db } from "../js/firebase.js";
+  import {
+    collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ── ADMIN PASSWORD (change this!) ──────────────
+  // For better security, store this as a hashed value or use Firebase Auth
+  const ADMIN_PASSWORD = "paris2026admin";
+  // ────────────────────────────────────────────────
+
+  let guests = [];
+
+  window.adminLogin = function() {
+    const pass = document.getElementById("admin-pass").value;
+    if (pass === ADMIN_PASSWORD) {
+      document.getElementById("admin-login").classList.add("hidden");
+      document.getElementById("admin-panel").classList.remove("hidden");
+      loadGuests();
+    } else {
+      document.getElementById("admin-login-err").classList.remove("hidden");
+    }
+  };
+
+  document.getElementById("admin-pass").addEventListener("keydown", e => {
+    if (e.key === "Enter") window.adminLogin();
+  });
+
+  async function loadGuests() {
+    const snap = await getDocs(collection(db, "guests"));
+    guests = [];
+    snap.forEach(d => guests.push({ code: d.id, ...d.data() }));
+    renderTable();
+    renderStats();
+  }
+
+  function renderStats() {
+    const confirmed = guests.filter(g => g.status === "confirmed").length;
+    const pending   = guests.filter(g => !g.status || g.status === "pending").length;
+    document.getElementById("s-total").textContent     = guests.length;
+    document.getElementById("s-confirmed").textContent = confirmed;
+    document.getElementById("s-pending").textContent   = pending;
+    document.getElementById("s-tickets").textContent   = Math.max(0, 10 - confirmed);
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById("guest-tbody");
+    tbody.innerHTML = "";
+    guests.forEach(g => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${g.name || "<span style='color:var(--dim)'>Not yet set</span>"}</td>
+        <td style="color:var(--muted)">${g.relationship || "–"}</td>
+        <td><span class="mono-sm">${g.code}</span></td>
+        <td>${statusBadge(g.status)}</td>
+        <td>${g.ticketReleased
+          ? '<span class="badge b-released">Released</span>'
+          : '<button class="btn-outline" onclick="releaseTicket(\''+g.code+'\')">Release</button>'}</td>
+        <td><button class="btn-sm-red" onclick="removeGuest('${g.code}')">Remove</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function statusBadge(s) {
+    const map = {
+      confirmed: "b-confirmed", virtual: "b-virtual",
+      pending: "b-pending", declined: "b-declined"
+    };
+    const label = s || "pending";
+    return `<span class="badge ${map[label] || 'b-pending'}">${label}</span>`;
+  }
+
+  function generateCode() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code = "GRAD-";
+    for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+  }
+
+  window.addGuest = async function() {
+    const name = document.getElementById("new-name").value.trim();
+    const rel  = document.getElementById("new-rel").value.trim();
+    const msgEl = document.getElementById("add-msg");
+    const previewEl = document.getElementById("new-code-preview");
+
+    if (!name) { msgEl.textContent = "Please enter a name."; msgEl.className = "msg error"; msgEl.classList.remove("hidden"); return; }
+
+    let code, exists = true;
+    while (exists) {
+      code = generateCode();
+      exists = guests.some(g => g.code === code);
+    }
+
+    try {
+      await setDoc(doc(db, "guests", code), {
+        name, relationship: rel || "",
+        status: "pending",
+        ticketReleased: false,
+        ticketId: code + "-" + Date.now().toString(36).toUpperCase(),
+        createdAt: serverTimestamp()
+      });
+
+      document.getElementById("new-code-val").textContent = code;
+      previewEl.classList.remove("hidden");
+      msgEl.classList.add("hidden");
+      document.getElementById("new-name").value = "";
+      document.getElementById("new-rel").value  = "";
+
+      await loadGuests();
+    } catch (err) {
+      msgEl.textContent = "Error adding guest: " + err.message;
+      msgEl.className = "msg error";
+      msgEl.classList.remove("hidden");
+    }
+  };
+
+  window.releaseTicket = async function(code) {
+    if (!confirm(`Release ticket for ${code}? The guest will be able to view their QR code.`)) return;
+    try {
+      await updateDoc(doc(db, "guests", code), { ticketReleased: true });
+      await loadGuests();
+    } catch (err) { alert("Error: " + err.message); }
+  };
+
+  window.removeGuest = async function(code) {
+    if (!confirm(`Remove guest with code ${code}? This cannot be undone.`)) return;
+    try {
+      await deleteDoc(doc(db, "guests", code));
+      await loadGuests();
+    } catch (err) { alert("Error: " + err.message); }
+  };
+</script>
+</body>
+</html>
