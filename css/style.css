@@ -512,7 +512,7 @@ body {
 .photo-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* ── UTILITIES ── */
-.hidden { display: none; }
+.hidden { display: none !important; }
 .mono { font-family: var(--font-mono); }
 
 @media (max-width: 400px) {
