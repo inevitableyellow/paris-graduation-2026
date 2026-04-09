@@ -126,6 +126,11 @@
     </thead>
     <tbody id="guest-tbody"></tbody>
   </table>
+
+  <!-- PHOTO MANAGEMENT -->
+  <div class="section-title">Photos</div>
+  <div id="photo-admin-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No photos uploaded yet.</div>
+  <div id="photo-admin-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:2rem;"></div>
 </div>
 
 <script type="module">
@@ -133,6 +138,9 @@
   import {
     collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getStorage, ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const storage = getStorage();
 
   // ── ADMIN PASSWORD HASH (SHA-256) ──────────────
   const ADMIN_PASSWORD_HASH = "d5e4f8d3e37d6eaf63a7f6fe0072fe7986ec81f16047d836a755d19c52c8d2b8";
@@ -152,6 +160,7 @@
       document.getElementById("admin-login").classList.add("hidden");
       document.getElementById("admin-panel").classList.remove("hidden");
       loadGuests();
+      loadAdminPhotos();
     } else {
       msgEl.classList.remove("hidden");
     }
@@ -301,6 +310,67 @@
       await deleteDoc(doc(db, "guests", code));
       await loadGuests();
     } catch (err) { alert("Error: " + err.message); }
+  };
+
+  async function loadAdminPhotos() {
+    const grid    = document.getElementById("photo-admin-grid");
+    const emptyEl = document.getElementById("photo-admin-empty");
+    grid.innerHTML = "";
+
+    try {
+      const snap = await getDocs(collection(db, "photos"));
+      if (snap.empty) {
+        emptyEl.style.display = "block";
+        return;
+      }
+      emptyEl.style.display = "none";
+      snap.forEach(d => {
+        const { url, uploadedBy } = d.data();
+        const id = d.id;
+        const wrap = document.createElement("div");
+        wrap.style.cssText = "position:relative;border-radius:8px;overflow:hidden;background:var(--subtle);border:0.5px solid var(--border);";
+        wrap.innerHTML = `
+          <img src="${url}" style="width:100%;aspect-ratio:1;object-fit:cover;display:block;" loading="lazy" />
+          <div style="padding:6px 8px;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${uploadedBy || "Unknown"}</div>
+          <button onclick="deletePhoto('${id}', '${url}', this)" style="position:absolute;top:6px;right:6px;background:rgba(163,45,45,0.85);color:white;border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">Delete</button>
+        `;
+        grid.appendChild(wrap);
+      });
+    } catch (err) {
+      console.error("Failed to load photos:", err);
+    }
+  }
+
+  window.deletePhoto = async function(docId, url, btn) {
+    if (!confirm("Delete this photo? This cannot be undone.")) return;
+    btn.textContent = "...";
+    btn.disabled = true;
+    try {
+      // Delete from Firestore
+      await deleteDoc(doc(db, "photos", docId));
+
+      // Delete from Storage
+      try {
+        const fileRef = ref(storage, url);
+        await deleteObject(fileRef);
+      } catch (e) {
+        // If storage delete fails, Firestore record is still removed
+        console.warn("Storage delete failed:", e.message);
+      }
+
+      // Remove card from UI
+      btn.closest("div[style]").remove();
+
+      // Show empty state if no photos left
+      const grid = document.getElementById("photo-admin-grid");
+      if (!grid.children.length) {
+        document.getElementById("photo-admin-empty").style.display = "block";
+      }
+    } catch (err) {
+      alert("Failed to delete: " + err.message);
+      btn.textContent = "Delete";
+      btn.disabled = false;
+    }
   };
 </script>
 </body>
