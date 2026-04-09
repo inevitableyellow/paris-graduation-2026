@@ -3,262 +3,221 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin · Paris's Graduation</title>
+  <title>Paris's Graduation · April 30, 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --navy: #00274C; --maize: #FFCB05; --maize-dim: rgba(255,203,5,0.12);
-      --white: #fff; --bg: #0a0f1a;
-      --border: rgba(255,203,5,0.2); --subtle: rgba(255,255,255,0.07);
-      --muted: rgba(255,255,255,0.5); --dim: rgba(255,255,255,0.3);
-      --font: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: var(--font); background: var(--bg); color: var(--white); min-height: 100vh; padding: 2rem 1.25rem; }
-    .page { max-width: 720px; margin: 0 auto; }
-    .admin-header { border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 2rem; }
-    .admin-header h1 { font-size: 20px; font-weight: 500; color: var(--maize); }
-    .admin-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
-
-    .section-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--maize); opacity: 0.7; margin-bottom: 0.75rem; }
-
-    /* ADD GUEST FORM */
-    .add-form { background: var(--subtle); border: 0.5px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem; }
-    .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-    .form-row input { flex: 1; min-width: 140px; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.15); border-radius: 7px; padding: 9px 12px; color: var(--white); font-family: var(--font); font-size: 13px; outline: none; }
-    .form-row input:focus { border-color: var(--maize); }
-    .form-row input::placeholder { color: var(--dim); }
-    .btn { background: var(--maize); color: var(--navy); border: none; border-radius: 7px; padding: 9px 16px; font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
-    .btn:hover { background: #e6b800; }
-    .btn-outline { background: transparent; color: var(--maize); border: 0.5px solid var(--maize); border-radius: 7px; padding: 6px 12px; font-family: var(--mono); font-size: 11px; cursor: pointer; }
-    .btn-outline:hover { background: var(--maize-dim); }
-    .btn-sm-red { background: transparent; color: #f09595; border: 0.5px solid rgba(240,149,149,0.3); border-radius: 6px; padding: 5px 10px; font-family: var(--mono); font-size: 11px; cursor: pointer; }
-    .btn-sm-red:hover { background: rgba(240,149,149,0.1); }
-    .code-preview { font-family: var(--mono); font-size: 12px; color: var(--maize); background: var(--maize-dim); padding: 6px 10px; border-radius: 6px; display: inline-block; margin-top: 6px; letter-spacing: 0.06em; }
-
-    /* GUEST TABLE */
-    .guest-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 2rem; }
-    .guest-table th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0 8px 10px; border-bottom: 0.5px solid var(--border); }
-    .guest-table td { padding: 10px 8px; border-bottom: 0.5px solid rgba(255,255,255,0.05); vertical-align: middle; }
-    .guest-table tr:last-child td { border-bottom: none; }
-    .badge { font-family: var(--mono); font-size: 11px; padding: 3px 8px; border-radius: 999px; display: inline-block; }
-    .b-confirmed { background: rgba(29,158,117,0.18); color: #5DCAA5; }
-    .b-virtual   { background: rgba(55,138,221,0.18); color: #85B7EB; }
-    .b-pending   { background: rgba(239,159,39,0.18); color: #EF9F27; }
-    .b-declined  { background: rgba(226,75,74,0.18);  color: #E24B4A; }
-    .b-released  { background: rgba(255,203,5,0.18);  color: var(--maize); }
-    .mono-sm { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-
-    /* STATS */
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 2rem; }
-    .stat { background: var(--subtle); border: 0.5px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
-    .stat-num { font-size: 28px; font-weight: 500; color: var(--maize); font-family: var(--mono); }
-    .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
-    .msg { font-size: 13px; color: var(--muted); margin-top: 8px; }
-    .msg.success { color: #5DCAA5; }
-    .msg.error { color: #f09595; }
-    .hidden { display: none !important; }
-
-    /* LOGIN */
-    #admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; text-align: center; }
-    #admin-login h2 { font-size: 20px; font-weight: 500; color: var(--maize); }
-    #admin-login input { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 11px 16px; color: var(--white); font-family: var(--font); font-size: 14px; outline: none; width: 260px; text-align: center; }
-    #admin-login input:focus { border-color: var(--maize); }
-  </style>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-<!-- ADMIN LOGIN -->
-<div id="admin-login">
-  <h2>Admin Access</h2>
-  <p style="font-size:13px;color:rgba(255,255,255,0.45);">Enter your admin password to continue</p>
-  <input id="admin-pass" type="password" placeholder="Password" />
-  <button class="btn" onclick="adminLogin()">Enter →</button>
-  <div id="admin-login-err" class="msg error hidden">Incorrect password.</div>
-</div>
-
-<!-- ADMIN PANEL -->
-<div id="admin-panel" class="page hidden">
-  <div class="admin-header">
-    <h1>Paris's Graduation · Admin</h1>
-    <p>Manage guests, invite codes, and ticket release</p>
-  </div>
-
-  <!-- STATS -->
-  <div class="section-title">Overview</div>
-  <div class="stats">
-    <div class="stat"><div class="stat-num" id="s-total">–</div><div class="stat-label">Total guests</div></div>
-    <div class="stat"><div class="stat-num" id="s-confirmed">–</div><div class="stat-label">Confirmed</div></div>
-    <div class="stat"><div class="stat-num" id="s-pending">–</div><div class="stat-label">Pending</div></div>
-    <div class="stat"><div class="stat-num" id="s-tickets">–</div><div class="stat-label">Tickets left</div></div>
-  </div>
-
-  <!-- ADD GUEST -->
-  <div class="section-title">Add a guest</div>
-  <div class="add-form">
-    <div class="form-row">
-      <input id="new-name" placeholder="Full name" />
-      <input id="new-rel"  placeholder="Relationship (e.g. Mum)" />
-      <button class="btn" onclick="addGuest()">Generate invite</button>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="screen active">
+    <div class="login-bg"></div>
+    <div class="login-card">
+      <div class="login-seal">U · M</div>
+      <h1 class="login-title">Paris's Graduation</h1>
+      <p class="login-sub">April 30, 2026 · Ann Arbor, Michigan</p>
+      <div class="login-divider"></div>
+      <p class="login-prompt">Enter your invite code to continue</p>
+      <input id="invite-input" class="invite-input" type="text" placeholder="e.g. GRAD-XXXX" autocomplete="off" spellcheck="false" />
+      <div id="invite-error" class="invite-error hidden">That code doesn't match our guest list. Please check and try again.</div>
+      <button class="btn-primary" onclick="verifyInvite()">Continue →</button>
     </div>
-    <div id="new-code-preview" class="hidden">
-      Code generated: <span class="code-preview" id="new-code-val"></span>
-      <span style="font-size:12px;color:var(--muted);margin-left:10px;">Send this to your guest</span>
-    </div>
-    <div id="add-msg" class="msg hidden"></div>
   </div>
 
-  <!-- GUEST LIST -->
-  <div class="section-title">Guest list</div>
-  <table class="guest-table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Relationship</th>
-        <th>Code</th>
-        <th>Status</th>
-        <th>Ticket</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody id="guest-tbody"></tbody>
-  </table>
-</div>
+  <!-- MAIN SITE -->
+  <div id="main-screen" class="screen hidden">
 
-<script type="module">
-  import { db } from "../js/firebase.js";
-  import {
-    collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="header-eyebrow">University of Michigan · School of Information</div>
+        <h1 class="header-title">Paris <span class="header-title-italic">graduates</span></h1>
+        <p class="header-degree">MS Information · Data Science & Machine Learning</p>
+        <div class="countdown-row" id="countdown">
+          <div class="cd-unit"><span class="cd-num" id="cd-days">--</span><span class="cd-label">days</span></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cd-hrs">--</span><span class="cd-label">hrs</span></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cd-min">--</span><span class="cd-label">min</span></div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit"><span class="cd-num" id="cd-sec">--</span><span class="cd-label">sec</span></div>
+        </div>
+      </div>
+    </header>
 
-  // ── ADMIN PASSWORD (change this!) ──────────────
-  // For better security, store this as a hashed value or use Firebase Auth
-  const ADMIN_PASSWORD = "paris2026admin";
-  // ────────────────────────────────────────────────
+    <nav class="site-nav">
+      <button class="nav-btn active" onclick="switchTab('info')">Info</button>
+      <button class="nav-btn" onclick="switchTab('rsvp')">RSVP</button>
+      <button class="nav-btn" onclick="switchTab('ticket')">My Ticket</button>
+      <button class="nav-btn" onclick="switchTab('photos')">Photos</button>
+    </nav>
 
-  let guests = [];
+    <!-- INFO TAB -->
+    <section id="tab-info" class="tab-panel active">
+      <div class="content-wrap">
 
-  window.adminLogin = function() {
-    const pass = document.getElementById("admin-pass").value;
-    if (pass === ADMIN_PASSWORD) {
-      document.getElementById("admin-login").classList.add("hidden");
-      document.getElementById("admin-panel").classList.remove("hidden");
-      loadGuests();
-    } else {
-      document.getElementById("admin-login-err").classList.remove("hidden");
-    }
-  };
+        <div class="info-block">
+          <div class="info-label">Ceremony</div>
+          <div class="info-main">UMSI Commencement 2026</div>
+          <div class="info-meta">Thursday, April 30 · 10:00 AM – 12:00 PM EDT</div>
+          <div class="info-location">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            Crisler Center, 333 E Stadium Blvd, Ann Arbor, MI 48109
+          </div>
+          <a href="https://umsi.info/gradlive" target="_blank" class="info-link">Watch the livestream → umsi.info/gradlive</a>
+        </div>
 
-  document.getElementById("admin-pass").addEventListener("keydown", e => {
-    if (e.key === "Enter") window.adminLogin();
-  });
+        <div class="schedule-title">Schedule</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-time">10:00 AM</div>
+            <div class="tl-content">
+              <div class="tl-name">Ceremony begins</div>
+              <div class="tl-place">Crisler Center</div>
+            </div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-time">12:00 PM</div>
+            <div class="tl-content">
+              <div class="tl-name">Ceremony ends</div>
+              <div class="tl-place">Photos & celebrations</div>
+            </div>
+          </div>
+          <div class="tl-item tl-placeholder">
+            <div class="tl-dot"></div>
+            <div class="tl-time">TBD</div>
+            <div class="tl-content">
+              <div class="tl-name">Dinner reservation</div>
+              <div class="tl-place">Details coming soon</div>
+            </div>
+          </div>
+        </div>
 
-  async function loadGuests() {
-    const snap = await getDocs(collection(db, "guests"));
-    guests = [];
-    snap.forEach(d => guests.push({ code: d.id, ...d.data() }));
-    renderTable();
-    renderStats();
-  }
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="ic-label">Parking & transport</div>
+            <div class="ic-body">Details coming soon</div>
+          </div>
+          <div class="info-card">
+            <div class="ic-label">Dress code</div>
+            <div class="ic-body">Details coming soon</div>
+          </div>
+          <div class="info-card">
+            <div class="ic-label">Note on tickets</div>
+            <div class="ic-body">All graduates and guests require a ticket. Children over 2 years old require their own ticket. Each ticket QR code is unique and single-use.</div>
+          </div>
+        </div>
 
-  function renderStats() {
-    const confirmed = guests.filter(g => g.status === "confirmed").length;
-    const pending   = guests.filter(g => !g.status || g.status === "pending").length;
-    document.getElementById("s-total").textContent     = guests.length;
-    document.getElementById("s-confirmed").textContent = confirmed;
-    document.getElementById("s-pending").textContent   = pending;
-    document.getElementById("s-tickets").textContent   = Math.max(0, 10 - confirmed);
-  }
+      </div>
+    </section>
 
-  function renderTable() {
-    const tbody = document.getElementById("guest-tbody");
-    tbody.innerHTML = "";
-    guests.forEach(g => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${g.name || "<span style='color:var(--dim)'>Not yet set</span>"}</td>
-        <td style="color:var(--muted)">${g.relationship || "–"}</td>
-        <td><span class="mono-sm">${g.code}</span></td>
-        <td>${statusBadge(g.status)}</td>
-        <td>${g.ticketReleased
-          ? '<span class="badge b-released">Released</span>'
-          : '<button class="btn-outline" onclick="releaseTicket(\''+g.code+'\')">Release</button>'}</td>
-        <td><button class="btn-sm-red" onclick="removeGuest('${g.code}')">Remove</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
+    <!-- RSVP TAB -->
+    <section id="tab-rsvp" class="tab-panel hidden">
+      <div class="content-wrap">
+        <div id="rsvp-form-wrap">
+          <p class="rsvp-intro">Please confirm your attendance below. If bringing a child over 2, add them as a separate guest — they will need their own ticket.</p>
 
-  function statusBadge(s) {
-    const map = {
-      confirmed: "b-confirmed", virtual: "b-virtual",
-      pending: "b-pending", declined: "b-declined"
-    };
-    const label = s || "pending";
-    return `<span class="badge ${map[label] || 'b-pending'}">${label}</span>`;
-  }
+          <div class="form-group">
+            <label class="form-label">Your full name</label>
+            <input id="rsvp-name" class="form-input" type="text" placeholder="As it appears on the guest list" />
+          </div>
 
-  function generateCode() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "GRAD-";
-    for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
-    return code;
-  }
+          <div class="form-group">
+            <label class="form-label">Attendance</label>
+            <div class="rsvp-options">
+              <label class="rsvp-option">
+                <input type="radio" name="rsvp-status" value="confirmed" />
+                <span class="rsvp-opt-label">Attending in person</span>
+              </label>
+              <label class="rsvp-option">
+                <input type="radio" name="rsvp-status" value="virtual" />
+                <span class="rsvp-opt-label">Attending virtually</span>
+              </label>
+              <label class="rsvp-option">
+                <input type="radio" name="rsvp-status" value="pending" />
+                <span class="rsvp-opt-label">Not sure yet</span>
+              </label>
+              <label class="rsvp-option">
+                <input type="radio" name="rsvp-status" value="declined" />
+                <span class="rsvp-opt-label">Unable to attend</span>
+              </label>
+            </div>
+          </div>
 
-  window.addGuest = async function() {
-    const name = document.getElementById("new-name").value.trim();
-    const rel  = document.getElementById("new-rel").value.trim();
-    const msgEl = document.getElementById("add-msg");
-    const previewEl = document.getElementById("new-code-preview");
+          <div id="rsvp-error" class="invite-error hidden"></div>
+          <button class="btn-primary" onclick="submitRsvp()">Confirm RSVP →</button>
+        </div>
 
-    if (!name) { msgEl.textContent = "Please enter a name."; msgEl.className = "msg error"; msgEl.classList.remove("hidden"); return; }
+        <div id="rsvp-confirmed" class="rsvp-success hidden">
+          <div class="success-icon">✓</div>
+          <div class="success-title">You're confirmed!</div>
+          <div class="success-body" id="rsvp-success-msg"></div>
+          <button class="btn-secondary" onclick="switchTab('ticket')">View my ticket →</button>
+        </div>
+      </div>
+    </section>
 
-    let code, exists = true;
-    while (exists) {
-      code = generateCode();
-      exists = guests.some(g => g.code === code);
-    }
+    <!-- TICKET TAB -->
+    <section id="tab-ticket" class="tab-panel hidden">
+      <div class="content-wrap">
+        <div id="ticket-pending-msg" class="ticket-pending">
+          <p>Your ticket will be available closer to graduation day. Check back soon!</p>
+          <p class="ticket-pending-sub">Make sure you've completed your RSVP first.</p>
+        </div>
+        <div id="ticket-card" class="ticket-card hidden">
+          <div class="ticket-header">
+            <div class="ticket-event">UMSI Commencement 2026</div>
+            <div class="ticket-name" id="ticket-name-display"></div>
+          </div>
+          <div class="ticket-details">
+            <div class="ticket-detail-row">
+              <span class="td-label">Date</span>
+              <span class="td-val">Thursday, April 30, 2026</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Time</span>
+              <span class="td-val">10:00 AM – 12:00 PM EDT</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Venue</span>
+              <span class="td-val">Crisler Center, Ann Arbor</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Ticket ID</span>
+              <span class="td-val mono" id="ticket-id-display"></span>
+            </div>
+          </div>
+          <div class="ticket-qr-wrap">
+            <div id="ticket-qr"></div>
+            <div class="ticket-qr-note">Present this QR code at the door. Single-use only.</div>
+          </div>
+          <div class="ticket-footer">paris-graduation-2026.github.io</div>
+        </div>
+      </div>
+    </section>
 
-    try {
-      await setDoc(doc(db, "guests", code), {
-        name, relationship: rel || "",
-        status: "pending",
-        ticketReleased: false,
-        ticketId: code + "-" + Date.now().toString(36).toUpperCase(),
-        createdAt: serverTimestamp()
-      });
+    <!-- PHOTOS TAB -->
+    <section id="tab-photos" class="tab-panel hidden">
+      <div class="content-wrap">
+        <p class="photos-intro">Share your favourite moments from the day. Photos are visible to all registered guests.</p>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('photo-input').click()">
+          <div class="upload-icon">↑</div>
+          <div class="upload-text">Tap to upload a photo</div>
+          <div class="upload-sub">JPG, PNG or HEIC · max 10MB</div>
+          <input id="photo-input" type="file" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)" />
+        </div>
+        <div id="photo-uploading" class="hidden" style="text-align:center;padding:1rem;color:var(--maize);font-size:14px;">Uploading...</div>
+        <div class="photo-grid" id="photo-grid"></div>
+      </div>
+    </section>
 
-      document.getElementById("new-code-val").textContent = code;
-      previewEl.classList.remove("hidden");
-      msgEl.classList.add("hidden");
-      document.getElementById("new-name").value = "";
-      document.getElementById("new-rel").value  = "";
+  </div>
 
-      await loadGuests();
-    } catch (err) {
-      msgEl.textContent = "Error adding guest: " + err.message;
-      msgEl.className = "msg error";
-      msgEl.classList.remove("hidden");
-    }
-  };
-
-  window.releaseTicket = async function(code) {
-    if (!confirm(`Release ticket for ${code}? The guest will be able to view their QR code.`)) return;
-    try {
-      await updateDoc(doc(db, "guests", code), { ticketReleased: true });
-      await loadGuests();
-    } catch (err) { alert("Error: " + err.message); }
-  };
-
-  window.removeGuest = async function(code) {
-    if (!confirm(`Remove guest with code ${code}? This cannot be undone.`)) return;
-    try {
-      await deleteDoc(doc(db, "guests", code));
-      await loadGuests();
-    } catch (err) { alert("Error: " + err.message); }
-  };
-</script>
+  <!-- Firebase SDKs -->
+  <script type="module" src="js/firebase.js"></script>
+  <script type="module" src="js/app.js"></script>
 </body>
 </html>
