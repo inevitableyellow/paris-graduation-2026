@@ -39,6 +39,7 @@ window.switchTab = function(tab) {
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
   document.getElementById(`tab-${tab}`).classList.add("active");
 
+  if (tab === "rsvp")   window.renderRsvpTab();
   if (tab === "ticket") renderTicket();
   if (tab === "photos") loadPhotos();
 };
@@ -73,9 +74,6 @@ window.verifyInvite = async function() {
     if (currentGuest.name) {
       document.getElementById("rsvp-name").value = currentGuest.name;
     }
-    if (currentGuest.status && currentGuest.status !== "pending") {
-      showRsvpConfirmed(currentGuest.status);
-    }
 
   } catch (err) {
     console.error(err);
@@ -89,12 +87,57 @@ document.getElementById("invite-input").addEventListener("keydown", e => {
   if (e.key === "Enter") window.verifyInvite();
 });
 
+// ─── RSVP CONFIG ──────────────────────────────
+const RSVP_DEADLINE   = new Date("2026-04-20T23:59:59-04:00");
+const MAX_IN_PERSON   = 10;
+
+function isDeadlinePassed() { return new Date() > RSVP_DEADLINE; }
+
+// ─── RSVP TAB RENDER ──────────────────────────
+// Called when switching to RSVP tab or after login
+window.renderRsvpTab = async function() {
+  const formWrap      = document.getElementById("rsvp-form-wrap");
+  const confirmedWrap = document.getElementById("rsvp-confirmed");
+  const deadlineEl    = document.getElementById("rsvp-deadline-msg");
+  const errEl         = document.getElementById("rsvp-error");
+
+  errEl.classList.add("hidden");
+
+  // Always hide change button after deadline
+  const changeBtn = document.getElementById("change-rsvp-btn");
+  if (changeBtn) changeBtn.style.display = isDeadlinePassed() ? "none" : "inline-block";
+
+  // Deadline passed — lock the form
+  if (isDeadlinePassed()) {
+    formWrap.classList.add("hidden");
+    confirmedWrap.classList.add("hidden");
+    deadlineEl.classList.remove("hidden");
+    return;
+  }
+
+  // Guest has already RSVPed — show confirmation with change option
+  if (currentGuest.status && currentGuest.status !== "pending") {
+    showRsvpConfirmed(currentGuest.status);
+    return;
+  }
+
+  // Default: show the form
+  formWrap.classList.remove("hidden");
+  confirmedWrap.classList.add("hidden");
+  deadlineEl.classList.add("hidden");
+};
+
 // ─── RSVP SUBMISSION ──────────────────────────
 window.submitRsvp = async function() {
   const name   = document.getElementById("rsvp-name").value.trim();
   const status = document.querySelector('input[name="rsvp-status"]:checked')?.value;
   const errEl  = document.getElementById("rsvp-error");
 
+  if (isDeadlinePassed()) {
+    errEl.textContent = "The RSVP deadline has passed. Please contact Paris directly.";
+    errEl.classList.remove("hidden");
+    return;
+  }
   if (!name) {
     errEl.textContent = "Please enter your full name.";
     errEl.classList.remove("hidden");
@@ -106,24 +149,76 @@ window.submitRsvp = async function() {
     return;
   }
 
+  // Check ticket cap for in-person (exclude current guest's existing status to allow changes)
+  if (status === "confirmed") {
+    // Block virtual guests from self-upgrading to in-person
+    if (currentGuest.status === "virtual") {
+      errEl.textContent = "You're currently registered as a virtual attendee. To change to in-person, please contact Paris directly as this affects ticket allocation.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+
+    const snap = await getDocs(collection(db, "guests"));
+    let inPersonCount = 0;
+    snap.forEach(d => {
+      const g = d.data();
+      if (d.id !== currentGuest.code && g.status === "confirmed") inPersonCount++;
+    });
+    if (inPersonCount >= MAX_IN_PERSON) {
+      errEl.textContent = "Sorry, all in-person tickets have been allocated. You can still attend virtually!";
+      errEl.classList.remove("hidden");
+      return;
+    }
+  }
+
   errEl.classList.add("hidden");
 
   try {
     await updateDoc(doc(db, "guests", currentGuest.code), {
-      name,
-      status,
-      rsvpedAt: serverTimestamp()
+      name, status, rsvpedAt: serverTimestamp()
     });
 
     currentGuest.name   = name;
     currentGuest.status = status;
-
     showRsvpConfirmed(status);
 
   } catch (err) {
     console.error(err);
     errEl.textContent = "Something went wrong saving your RSVP. Please try again.";
     errEl.classList.remove("hidden");
+  }
+};
+
+// ─── CHANGE RSVP ──────────────────────────────
+window.changeRsvp = function() {
+  if (isDeadlinePassed()) {
+    document.getElementById("rsvp-confirmed").classList.add("hidden");
+    document.getElementById("rsvp-deadline-msg").classList.remove("hidden");
+    return;
+  }
+
+  document.getElementById("rsvp-confirmed").classList.add("hidden");
+  document.getElementById("rsvp-deadline-msg").classList.add("hidden");
+  document.getElementById("rsvp-form-wrap").classList.remove("hidden");
+
+  // Pre-select current status
+  const radio = document.querySelector(`input[name="rsvp-status"][value="${currentGuest.status}"]`);
+  if (radio) radio.checked = true;
+
+  // If currently virtual, disable in-person option and show note
+  const inPersonRadio = document.querySelector('input[name="rsvp-status"][value="confirmed"]');
+  const inPersonNote  = document.getElementById("inperson-note");
+  const inPersonLabel = document.getElementById("option-confirmed");
+  if (currentGuest.status === "virtual") {
+    inPersonRadio.disabled = true;
+    inPersonLabel.style.opacity = "0.4";
+    inPersonLabel.style.cursor  = "not-allowed";
+    inPersonNote.classList.remove("hidden");
+  } else {
+    inPersonRadio.disabled = false;
+    inPersonLabel.style.opacity = "";
+    inPersonLabel.style.cursor  = "";
+    inPersonNote.classList.add("hidden");
   }
 };
 

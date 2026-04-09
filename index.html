@@ -115,7 +115,7 @@
     </section>
 
     <!-- RSVP TAB -->
-    <section id="tab-rsvp" class="tab-panel">
+    <section id="tab-rsvp" class="tab-panel hidden">
       <div class="content-wrap">
         <div id="rsvp-form-wrap">
           <p class="rsvp-intro">Please confirm your attendance below. If bringing a child over 2, add them as a separate guest — they will need their own ticket.</p>
@@ -128,13 +128,13 @@
           <div class="form-group">
             <label class="form-label">Attendance</label>
             <div class="rsvp-options">
-              <label class="rsvp-option">
+              <label class="rsvp-option" id="option-confirmed">
                 <input type="radio" name="rsvp-status" value="confirmed" />
-                <span class="rsvp-opt-label">Attending in person</span>
+                <span class="rsvp-opt-label">Attending in person <span id="inperson-note" class="hidden" style="font-size:12px;color:#EF9F27;margin-left:6px;">— contact Paris to change</span></span>
               </label>
               <label class="rsvp-option">
                 <input type="radio" name="rsvp-status" value="virtual" />
-                <span class="rsvp-opt-label">Attending virtually</span>
+                <span class="rsvp-opt-label">Attending virtually <span style="font-size:12px;color:#EF9F27;margin-left:6px;">— your ticket will be released to others</span></span>
               </label>
               <label class="rsvp-option">
                 <input type="radio" name="rsvp-status" value="pending" />
@@ -145,10 +145,17 @@
                 <span class="rsvp-opt-label">Unable to attend</span>
               </label>
             </div>
+            <p style="font-size:12px;color:var(--text-dim);line-height:1.6;margin-top:0.75rem;">Please note: if you select virtual attendance, your in-person ticket will be made available to other guests and you will not be able to change back to in-person without contacting Paris directly.</p>
           </div>
 
           <div id="rsvp-error" class="invite-error hidden"></div>
           <button class="btn-primary" onclick="submitRsvp()">Confirm RSVP →</button>
+        </div>
+
+        <div id="rsvp-deadline-msg" class="hidden" style="text-align:center;padding:3rem 1rem;">
+          <div style="font-size:32px;margin-bottom:1rem;">🔒</div>
+          <div style="font-family:var(--font-display);font-size:22px;color:var(--white);margin-bottom:0.5rem;">RSVP deadline has passed</div>
+          <div style="font-size:14px;color:var(--text-muted);line-height:1.7;">The deadline to RSVP was April 20th. Please contact Paris directly if you need to make changes.</div>
         </div>
 
         <div id="rsvp-confirmed" class="rsvp-success hidden">
@@ -156,12 +163,14 @@
           <div class="success-title">You're confirmed!</div>
           <div class="success-body" id="rsvp-success-msg"></div>
           <button class="btn-secondary" onclick="switchTab('ticket')">View my ticket →</button>
+          <br>
+          <button id="change-rsvp-btn" class="btn-secondary" onclick="changeRsvp()" style="margin-top:0.5rem;border-color:rgba(255,255,255,0.2);color:var(--text-muted);font-size:13px;">Change my RSVP</button>
         </div>
       </div>
     </section>
 
     <!-- TICKET TAB -->
-    <section id="tab-ticket" class="tab-panel">
+    <section id="tab-ticket" class="tab-panel hidden">
       <div class="content-wrap">
         <div id="ticket-pending-msg" class="ticket-pending">
           <p>Your ticket will be available closer to graduation day. Check back soon!</p>
@@ -200,7 +209,7 @@
     </section>
 
     <!-- PHOTOS TAB -->
-    <section id="tab-photos" class="tab-panel">
+    <section id="tab-photos" class="tab-panel hidden">
       <div class="content-wrap">
         <p class="photos-intro">Share your favourite moments from the day. Photos are visible to all registered guests.</p>
         <div class="upload-zone" id="upload-zone" onclick="document.getElementById('photo-input').click()">
