@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paris's Reading List · Graduation 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>" />
+  <style>
+    :root {
+      --navy: #00274C; --navy-dark: #001a36; --maize: #FFCB05;
+      --maize-dim: rgba(255,203,5,0.12); --white: #fff;
+      --text-muted: rgba(255,255,255,0.55); --text-dim: rgba(255,255,255,0.35);
+      --border: rgba(255,203,5,0.2); --border-subtle: rgba(255,255,255,0.08);
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif; --font-mono: 'DM Mono', monospace;
+      --radius: 12px; --radius-sm: 8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-body); background: var(--navy-dark); color: var(--white); min-height: 100vh; }
+
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--maize); text-decoration: none; opacity: 0.7; transition: opacity 0.15s; padding: 1.25rem 1.25rem 0; }
+    .back-btn:hover { opacity: 1; }
+
+    .hero { background: var(--navy); border-bottom: 2px solid var(--maize); padding: 2rem 1.25rem 1.75rem; }
+    .hero-inner { max-width: 680px; margin: 0 auto; }
+    .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--maize); opacity: 0.8; margin-bottom: 0.5rem; }
+    .hero-name { font-family: var(--font-display); font-size: clamp(32px, 7vw, 48px); font-weight: 500; color: var(--white); line-height: 1.05; margin-bottom: 0.5rem; }
+    .hero-sub { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    .content { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .section { margin-bottom: 2.5rem; }
+    .section-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--maize); opacity: 0.7; margin-bottom: 1rem; }
+
+    /* BOOK CARDS */
+    .book-card {
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border-subtle);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 10px;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: background 0.15s;
+    }
+    .book-card:hover { background: rgba(255,255,255,0.06); }
+    .book-card.favorite {
+      background: rgba(255,203,5,0.07);
+      border-color: rgba(255,203,5,0.25);
+    }
+    .book-card.favorite:hover { background: rgba(255,203,5,0.11); }
+    .book-cover { font-size: 32px; flex-shrink: 0; line-height: 1; }
+    .book-info { flex: 1; }
+    .book-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 3px; line-height: 1.4; }
+    .book-author { font-family: var(--font-mono); font-size: 11px; color: var(--maize); opacity: 0.75; letter-spacing: 0.06em; margin-bottom: 0.6rem; }
+    .book-synopsis { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 0.75rem; }
+    .book-footer { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .book-link { font-family: var(--font-mono); font-size: 11px; color: var(--maize); text-decoration: none; border-bottom: 0.5px solid rgba(255,203,5,0.3); opacity: 0.8; transition: opacity 0.15s; }
+    .book-link:hover { opacity: 1; }
+    .fav-badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; background: rgba(255,203,5,0.15); color: var(--maize); padding: 2px 8px; border-radius: 999px; border: 0.5px solid rgba(255,203,5,0.3); }
+  </style>
+</head>
+<body>
+
+  <a href="about.html" class="back-btn">← Back to About</a>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Paris Heard · Graduation 2026</div>
+      <h1 class="hero-name">Reading List 📚</h1>
+      <p class="hero-sub">Books that shaped how I think, what I believe, and who I am. Highly recommend all of them.</p>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- FAVORITES -->
+    <div class="section">
+      <div class="section-label">⭐ Favorites</div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">📖</div>
+        <div class="book-info">
+          <div class="book-title">A Tale for the Time Being</div>
+          <div class="book-author">Ruth Ozeki</div>
+          <div class="book-synopsis">A sixteen-year-old girl in Tokyo writes a diary before she disappears — and a novelist on a remote Canadian island finds it washed ashore in a Hello Kitty lunchbox, possibly debris from the 2011 tsunami. As she reads, the two women's worlds begin to fold into each other in ways neither could have imagined. A stunning meditation on time, identity, grief, Zen Buddhism, and our shared humanity.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/a-tale-for-the-time-being/9780143124870" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">📖</div>
+        <div class="book-info">
+          <div class="book-title">Weapons of Math Destruction: How Big Data Increases Inequality and Threatens Democracy</div>
+          <div class="book-author">Cathy O'Neil</div>
+          <div class="book-synopsis">A former Wall Street mathematician sounds the alarm on the hidden algorithms shaping our lives — from college admissions to parole decisions to job applications. These "weapons of math destruction" are opaque, unregulated, and devastatingly biased, propping up the privileged and punishing the vulnerable. The book that confirmed my decision to enter data science.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/weapons-of-math-destruction-how-big-data-increases-inequality-and-threatens-democracy/9780553418835" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">📖</div>
+        <div class="book-info">
+          <div class="book-title">Babel, or the Necessity of Violence: An Arcane History of the Oxford Translators' Revolution</div>
+          <div class="book-author">R.F. Kuang</div>
+          <div class="book-synopsis">In a fantastical 1830s Oxford, the British Empire's power is fueled by magical silver bars engraved with the meaning lost in translation between languages. Robin Swift, an orphan from Canton brought to England by a mysterious professor, studies at Babel — the world's center for translation and magic — until he can no longer ignore what it means to serve an empire built on the exploitation of the very languages and cultures it colonizes. A breathtaking dark academia novel about language, colonialism, and whether institutions can ever truly be changed from within.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/babel-or-the-necessity-of-violence-an-arcane-history-of-the-oxford-translators-revolution/9780063021426" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">📖</div>
+        <div class="book-info">
+          <div class="book-title">The Poppy War</div>
+          <div class="book-author">R.F. Kuang</div>
+          <div class="book-synopsis">Rin is a war orphan in a fictional empire inspired by twentieth-century China who claws her way into the nation's most elite military academy — and discovers she has a terrifying shamanic power. When war erupts, she must reckon with what she is capable of. Deeply researched, unflinchingly brutal, and utterly gripping. A story about what war does to people, and what power does to those who wield it.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/the-poppy-war/9780062662583" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">📖</div>
+        <div class="book-info">
+          <div class="book-title">Mr. Penumbra's 24-Hour Bookstore</div>
+          <div class="book-author">Robin Sloan</div>
+          <div class="book-synopsis">A recently unemployed web designer takes a job as a night clerk at a mysterious San Francisco bookstore — and discovers its regulars aren't buying anything at all. What follows is a delightful adventure that weaves together ancient ciphers, secret societies, Google, and the enduring magic of books. Charming, clever, and impossible to put down.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/mr-penumbra-s-24-hour-bookstore/9781250037756" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA SCIENCE -->
+    <div class="section">
+      <div class="section-label">Data Science</div>
+
+      <div class="book-card">
+        <div class="book-cover">🤖</div>
+        <div class="book-info">
+          <div class="book-title">Weapons of Math Destruction: How Big Data Increases Inequality and Threatens Democracy</div>
+          <div class="book-author">Cathy O'Neil</div>
+          <div class="book-synopsis">A former Wall Street mathematician sounds the alarm on the hidden algorithms shaping our lives — from college admissions to parole decisions to job applications. These "weapons of math destruction" are opaque, unregulated, and devastatingly biased, propping up the privileged and punishing the vulnerable. The book that confirmed my decision to enter data science.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/weapons-of-math-destruction-how-big-data-increases-inequality-and-threatens-democracy/9780553418835" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">🔍</div>
+        <div class="book-info">
+          <div class="book-title">Algorithms of Oppression: How Search Engines Reinforce Racism</div>
+          <div class="book-author">Safiya Umoja Noble</div>
+          <div class="book-synopsis">What happens when you Google "black girls"? Safiya Noble did, and what she found launched a years-long investigation into how search engines — far from neutral — embed and amplify racism, sexism, and discrimination. A vital, eye-opening account of how data and technology can perpetuate the very inequalities we need them to dismantle.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/algorithms-of-oppression-how-search-engines-reinforce-racism/9781479837243" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">⚖️</div>
+        <div class="book-info">
+          <div class="book-title">Automating Inequality: How High-Tech Tools Profile, Police, and Punish the Poor</div>
+          <div class="book-author">Virginia Eubanks</div>
+          <div class="book-synopsis">In Indiana, a million welfare applications are denied by an automated system. In Los Angeles, an algorithm ranks homeless people's vulnerability. In Pittsburgh, a statistical model predicts which children might be abused. Virginia Eubanks reveals how automated decision-making — billed as neutral and efficient — instead builds a "digital poorhouse" that surveils and punishes the most vulnerable Americans.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/automating-inequality-how-high-tech-tools-profile-police-and-punish-the-poor/9781250074317" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">👻</div>
+        <div class="book-info">
+          <div class="book-title">Ghost Work: How to Stop Silicon Valley from Building a New Global Underclass</div>
+          <div class="book-author">Mary L. Gray & Siddharth Suri</div>
+          <div class="book-synopsis">Behind every "intelligent" AI system is a vast, invisible army of human workers — flagging content, labeling images, transcribing audio — with no benefits, no job security, and no legal protections. An essential exposé of the hidden human labor that makes the internet seem smart, and a call to bring these workers out of the shadows.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/ghost-work-how-to-stop-silicon-valley-from-building-a-new-global-underclass/9781328566249" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">🌐</div>
+        <div class="book-info">
+          <div class="book-title">The Googlization of Everything: And Why We Should Worry</div>
+          <div class="book-author">Siva Vaidhyanathan</div>
+          <div class="book-synopsis">We are not Google's customers — we are its products. Vaidhyanathan examines how Google's mission to "organize the world's information" has reshaped how we think, what we know, and who controls knowledge. A provocative look at the dark side of our Google fantasies and what it means to let a single company mediate so much of human understanding.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/the-googlization-of-everything-and-why-we-should-worry/9780520258822" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">🔒</div>
+        <div class="book-info">
+          <div class="book-title">Control and Freedom: Power and Paranoia in the Age of Fiber Optics</div>
+          <div class="book-author">Wendy Hui Kyong Chun</div>
+          <div class="book-synopsis">How did the internet — a medium that thrives on surveillance and control — come to be seen as a medium of freedom? Chun traces the political and technological coupling of freedom with control, arguing that the internet's relationship to democracy is shaped not by individual empowerment but by race, gender, and the ways it exposes us to others in ways we cannot control.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/control-and-freedom-power-and-paranoia-in-the-age-of-fiber-optics/9780262533065" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">🌸</div>
+        <div class="book-info">
+          <div class="book-title">From Counterculture to Cyberculture: Stewart Brand, the Whole Earth Network, and the Rise of Digital Utopianism</div>
+          <div class="book-author">Fred Turner</div>
+          <div class="book-synopsis">In the 1960s, computers were cold war machines. By the 1990s, they were tools of liberation. How did that happen? Turner traces the unlikely alliance between San Francisco hippies and Silicon Valley techies that transformed computers from instruments of conformity into symbols of freedom — and asks what that origin story means for the world we live in now.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/from-counterculture-to-cyberculture-stewart-brand-the-whole-earth-network-and-the-rise-of-digital-utopianism/9780226817422" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">💻</div>
+        <div class="book-info">
+          <div class="book-title">Neuromancer</div>
+          <div class="book-author">William Gibson</div>
+          <div class="book-synopsis">The cyberpunk novel that invented the word "cyberspace." Henry Dorsett Case is a washed-up hacker in a gritty dystopian future, recruited for a high-stakes mission involving rival AIs, a mercenary street samurai, and a world where the line between human and machine has never been blurrier. Winner of the Hugo, Nebula, and Philip K. Dick awards — a classic that shaped how we imagine technology and the future.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/neuromancer/9780441569595" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FANTASY -->
+    <div class="section">
+      <div class="section-label">Fantasy</div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">🔥</div>
+        <div class="book-info">
+          <div class="book-title">The Poppy War</div>
+          <div class="book-author">R.F. Kuang</div>
+          <div class="book-synopsis">Rin is a war orphan in a fictional empire inspired by twentieth-century China who claws her way into the nation's most elite military academy — and discovers she has a terrifying shamanic power. When war erupts, she must reckon with what she is capable of. Deeply researched, unflinchingly brutal, and utterly gripping.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/the-poppy-war/9780062662583" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">🌿</div>
+        <div class="book-info">
+          <div class="book-title">Babel, or the Necessity of Violence</div>
+          <div class="book-author">R.F. Kuang</div>
+          <div class="book-synopsis">In a fantastical 1830s Oxford, the British Empire's power is fueled by magical silver bars engraved with meaning lost in translation. An orphan from Canton studies at Babel until he can no longer ignore what it means to serve an empire built on exploitation. A breathtaking novel about language, colonialism, and violent resistance.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/babel-or-the-necessity-of-violence-an-arcane-history-of-the-oxford-translators-revolution/9780063021426" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FICTION -->
+    <div class="section">
+      <div class="section-label">Fiction</div>
+
+      <div class="book-card">
+        <div class="book-cover">🌊</div>
+        <div class="book-info">
+          <div class="book-title">Pachinko</div>
+          <div class="book-author">Min Jin Lee</div>
+          <div class="book-synopsis">Beginning in early 1900s Korea with Sunja — a young woman whose unplanned pregnancy threatens to shame her family — Pachinko follows four generations of a Korean family who immigrate to Japan, where they face discrimination, exclusion, and the slow indignity of being considered perpetual foreigners. An epic, unforgettable saga about faith, identity, sacrifice, and survival.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/pachinko-national-book-award-finalist/9781455563920" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">📔</div>
+        <div class="book-info">
+          <div class="book-title">A Tale for the Time Being</div>
+          <div class="book-author">Ruth Ozeki</div>
+          <div class="book-synopsis">A sixteen-year-old girl in Tokyo writes a diary before she disappears — and a novelist on a remote Canadian island finds it washed ashore in a Hello Kitty lunchbox. As she reads, the two women's worlds begin to fold into each other in ways neither could have imagined. A stunning meditation on time, identity, grief, and our shared humanity.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/a-tale-for-the-time-being/9780143124870" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="book-card">
+        <div class="book-cover">🍞</div>
+        <div class="book-info">
+          <div class="book-title">Sourdough</div>
+          <div class="book-author">Robin Sloan</div>
+          <div class="book-synopsis">A software engineer in San Francisco inherits a sourdough starter from her favorite restaurant — and ends up drawn into a secret underground farmers market where food and technology collide in ways she never expected. Warm, whimsical, and quietly profound. A love letter to making things with your hands in a world that increasingly values only what scales.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/sourdough/9780374537050" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+
+      <div class="book-card favorite">
+        <div class="book-cover">📚</div>
+        <div class="book-info">
+          <div class="book-title">Mr. Penumbra's 24-Hour Bookstore</div>
+          <div class="book-author">Robin Sloan</div>
+          <div class="book-synopsis">A recently unemployed web designer takes a night clerk job at a mysterious San Francisco bookstore — and discovers its regulars aren't buying anything at all. What follows is a delightful adventure weaving together ancient ciphers, secret societies, Google, and the enduring magic of books. Charming, clever, and impossible to put down.</div>
+          <div class="book-footer">
+            <span class="fav-badge">★ Favorite</span>
+            <a href="https://bookshop.org/books/mr-penumbra-s-24-hour-bookstore/9781250037756" target="_blank" class="book-link">Find it →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POLITICAL SCIENCE -->
+    <div class="section">
+      <div class="section-label">Political Science</div>
+
+      <div class="book-card">
+        <div class="book-cover">🗳️</div>
+        <div class="book-info">
+          <div class="book-title">How Democracies Die: What History Reveals About Our Future</div>
+          <div class="book-author">Steven Levitsky & Daniel Ziblatt</div>
+          <div class="book-synopsis">Democracies no longer die with a bang — through coups and revolutions — but with a whimper: the slow, steady erosion of institutions, norms, and the mutual toleration that holds political systems together. Two Harvard political scientists draw on decades of research across Europe and Latin America to explain how democracies unravel from within — and what, if anything, can be done to stop it.</div>
+          <div class="book-footer"><a href="https://bookshop.org/books/how-democracies-die/9781524762940" target="_blank" class="book-link">Find it →</a></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Gate: redirect to main site if not logged in
+    if (!sessionStorage.getItem("guestCode")) {
+      window.location.href = "index.html";
+    }
+  </script>
+
+</body>
+</html>
