@@ -74,16 +74,44 @@
     .btn-copy { background: var(--maize); color: var(--navy); border: none; border-radius: 7px; padding: 8px 14px; font-family: var(--font); font-size: 12px; font-weight: 500; cursor: pointer; }
     .btn-sms  { background: transparent; color: #5DCAA5; border: 0.5px solid rgba(29,158,117,0.4); border-radius: 7px; padding: 8px 14px; font-family: var(--font); font-size: 12px; cursor: pointer; text-decoration: none; display: inline-block; }
     @media (max-width: 640px) {
-      body { padding: 1.25rem 1rem; }
-      #admin-login input { width: 100%; max-width: 260px; }
+      html, body { max-width: 100vw; overflow-x: hidden; }
+      body { padding: 1rem 0.875rem; font-size: 14px; }
+      .page { max-width: 100%; }
+
+      /* Login */
+      #admin-login { padding: 1.5rem 1rem; }
+      #admin-login input { width: 100%; max-width: 100%; }
+
+      /* Header */
+      .admin-header h1 { font-size: 17px; }
+
+      /* Stats */
+      .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-num { font-size: 22px; }
+
+      /* Add guest form */
+      .add-form { padding: 1rem; }
+      .form-row { flex-direction: column; gap: 8px; }
+      .form-row input { width: 100%; min-width: unset; }
+      .btn { width: 100%; text-align: center; }
+
+      /* Invite generator */
+      .invite-actions { flex-direction: column; }
+      .btn-copy, .btn-sms { width: 100%; text-align: center; }
+
+      /* Guest table → cards */
+      .guest-table { display: block; overflow: hidden; }
       .guest-table thead { display: none; }
-      .guest-table, .guest-table tbody, .guest-table tr, .guest-table td { display: block; width: 100%; }
-      .guest-table tr { background: var(--subtle); border: 0.5px solid var(--border); border-radius: 10px; padding: 0.75rem; margin-bottom: 10px; }
-      .guest-table td { padding: 4px 0; border: none; display: flex; justify-content: space-between; align-items: center; font-size: 13px; flex-wrap: wrap; gap: 4px; }
-      .guest-table td[data-label]::before { content: attr(data-label); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); flex-shrink: 0; margin-right: 8px; }
-      .form-row { flex-direction: column; }
-      .form-row input { min-width: unset; width: 100%; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
+      .guest-table tbody { display: flex; flex-direction: column; gap: 10px; }
+      .guest-table tr { display: flex; flex-direction: column; gap: 6px; background: var(--subtle); border: 0.5px solid var(--border); border-radius: 10px; padding: 0.875rem; }
+      .guest-table td { display: flex; justify-content: space-between; align-items: center; border: none; padding: 0; font-size: 13px; flex-wrap: wrap; gap: 6px; }
+      .guest-table td[data-label]::before { content: attr(data-label); font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); flex-shrink: 0; }
+      .guest-table td[data-label=""]::before { display: none; }
+      .btn-outline { font-size: 11px; padding: 5px 10px; }
+      .btn-sm-red { font-size: 11px; padding: 5px 10px; }
+
+      /* Photo grid */
+      #photo-admin-grid { grid-template-columns: repeat(2, 1fr) !important; }
     }
   </style>
 </head>
