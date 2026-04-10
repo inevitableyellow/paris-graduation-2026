@@ -1,0 +1,214 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.header { }
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--charcoal);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--mid-gray);
+  margin-top: 6px;
+}
+
+.form {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.question {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 400px) {
+  .choices { grid-template-columns: 1fr; }
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--charcoal);
+  transition: border-color 0.2s, background 0.2s;
+}
+.choice:hover {
+  border-color: var(--gold-light);
+  background: rgba(201,168,76,0.04);
+}
+
+.choiceYes {
+  border-color: var(--sage) !important;
+  background: rgba(143,168,130,0.08) !important;
+}
+
+.choiceNo {
+  border-color: var(--blush) !important;
+  background: rgba(232,196,184,0.15) !important;
+}
+
+.choiceEmoji {
+  font-size: 28px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mid-gray);
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.submitBtn {
+  align-self: flex-start;
+  padding: 12px 32px;
+}
+
+/* Confirmation */
+.confirmation {
+  padding: 40px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.confirmIcon {
+  font-size: 48px;
+}
+
+.confirmTitle {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.confirmMsg {
+  font-size: 15px;
+  color: var(--mid-gray);
+  max-width: 360px;
+}
+
+/* Counts */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.counts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.countCard {
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.countNum {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.countLabel {
+  font-size: 13px;
+  color: var(--mid-gray);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.messageCard {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messageMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.messageName {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--charcoal);
+}
+
+.messageBadge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.3px;
+}
+
+.badgeYes {
+  background: rgba(143,168,130,0.15);
+  color: #4a7c3f;
+}
+
+.badgeNo {
+  background: rgba(232,196,184,0.3);
+  color: #9a5a4a;
+}
+
+.messageText {
+  font-size: 14px;
+  color: var(--mid-gray);
+  line-height: 1.5;
+}

@@ -1,0 +1,191 @@
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.header {}
+
+.back {
+  font-size: 14px;
+  color: var(--mid-gray);
+  padding: 6px 0;
+  margin-bottom: 12px;
+  display: block;
+  transition: color 0.2s;
+}
+.back:hover { color: var(--charcoal); }
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--charcoal);
+  letter-spacing: -0.5px;
+}
+
+.sub {
+  font-size: 14px;
+  color: var(--mid-gray);
+  margin-top: 4px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.tabBtn {
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--mid-gray);
+  border: 1.5px solid var(--border);
+  transition: all 0.2s;
+}
+.tabBtn:hover {
+  border-color: var(--charcoal);
+  color: var(--charcoal);
+}
+
+.tabActive {
+  background: var(--charcoal) !important;
+  color: white !important;
+  border-color: var(--charcoal) !important;
+}
+
+.content {}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.chip {
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(201,168,76,0.12);
+  color: var(--gold-dark);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.addForm {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.formTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 60px auto;
+  gap: 10px;
+  align-items: center;
+}
+
+@media (max-width: 580px) {
+  .formRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.numInput {
+  text-align: center;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.rowMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rowName {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.rowRel {
+  font-size: 13px;
+  color: var(--mid-gray);
+}
+
+.rowMsg {
+  font-size: 13px;
+  color: var(--mid-gray);
+  font-style: italic;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+.badgeGreen { background: rgba(143,168,130,0.15); color: #4a7c3f; }
+.badgeRed   { background: rgba(232,196,184,0.3);  color: #9a5a4a; }
+
+.ticketCount {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold-dark);
+  background: rgba(201,168,76,0.1);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.deleteBtn {
+  font-size: 12px;
+  color: #d45c43;
+  align-self: flex-start;
+  padding: 2px 0;
+  transition: opacity 0.2s;
+  opacity: 0.7;
+}
+.deleteBtn:hover { opacity: 1; }
+
+.empty {
+  font-size: 14px;
+  color: var(--mid-gray);
+  padding: 8px 0;
+}

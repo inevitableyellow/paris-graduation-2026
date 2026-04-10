@@ -1,0 +1,150 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.hero {
+  text-align: center;
+  padding: 40px 0 8px;
+}
+
+.heroEyebrow {
+  font-size: 15px;
+  color: var(--gold);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 600;
+  color: var(--charcoal);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+.heroSub {
+  font-size: 15px;
+  color: var(--mid-gray);
+  margin-top: 10px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--charcoal);
+  letter-spacing: -0.3px;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 520px) {
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+  .heroTitle {
+    font-size: 32px;
+  }
+}
+
+.detailCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+}
+
+.detailIcon {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.detailLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mid-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 4px;
+}
+
+.detailValue {
+  font-size: 15px;
+  color: var(--charcoal);
+  white-space: pre-line;
+  line-height: 1.5;
+}
+
+/* Timeline */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--warm-white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 20px;
+  box-shadow: var(--shadow);
+}
+
+.timelineItem {
+  display: grid;
+  grid-template-columns: 10px 100px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.timelineItem:last-child {
+  border-bottom: none;
+}
+
+.timelineDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.timelineTime {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold-dark);
+  white-space: nowrap;
+}
+
+.timelineEvent {
+  font-size: 14px;
+  color: var(--charcoal);
+  line-height: 1.4;
+}
+
+/* Tips */
+.tipsCard {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tip {
+  font-size: 14px;
+  color: var(--charcoal);
+  line-height: 1.5;
+}

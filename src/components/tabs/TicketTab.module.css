@@ -1,0 +1,151 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--charcoal);
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--mid-gray);
+  margin-top: 6px;
+}
+
+.summaryCard {
+  padding: 28px;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.summaryNum {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 600;
+  color: var(--charcoal);
+}
+
+.numGreen { color: var(--sage); }
+.numRed   { color: #d45c43; }
+
+.summaryLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mid-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summaryDivider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+}
+
+.progressBar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-dark) 100%);
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.guestList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guestRow {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.guestInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.guestName {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--charcoal);
+}
+
+.guestRel {
+  font-size: 12px;
+  color: var(--mid-gray);
+}
+
+.ticketBadge {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gold-dark);
+  background: rgba(201,168,76,0.1);
+  padding: 6px 14px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.emptyCard {
+  padding: 28px;
+  text-align: center;
+}
+
+.emptyMsg {
+  font-size: 14px;
+  color: var(--mid-gray);
+}
+
+.note {
+  padding: 18px 20px;
+  font-size: 14px;
+  color: var(--mid-gray);
+  line-height: 1.6;
+}
+
+.note strong {
+  color: var(--charcoal);
+}

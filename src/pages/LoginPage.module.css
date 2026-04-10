@@ -1,0 +1,129 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.circle1 {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%);
+  top: -150px;
+  right: -100px;
+}
+
+.circle2 {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,196,184,0.2) 0%, transparent 70%);
+  bottom: -100px;
+  left: -80px;
+}
+
+.circle3 {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(143,168,130,0.12) 0%, transparent 70%);
+  top: 50%;
+  left: 30%;
+}
+
+.card {
+  background: rgba(255,253,249,0.92);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(229,224,216,0.8);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(44,44,44,0.1);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.cap {
+  font-size: 48px;
+  margin-bottom: 16px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--charcoal);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--mid-gray);
+  margin-top: 6px;
+  letter-spacing: 0.3px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 28px 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mid-gray);
+  letter-spacing: 0.2px;
+}
+
+.error {
+  font-size: 13px;
+  color: #d45c43;
+  background: rgba(212,92,67,0.08);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: 4px;
+  padding: 14px;
+  font-size: 15px;
+}
