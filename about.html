@@ -54,6 +54,8 @@
     .future-card .fc-icon { font-size: 20px; margin-bottom: 0.5rem; }
     .future-card .fc-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 0.25rem; }
     .future-card .fc-body { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .future-card .fc-body p { margin-bottom: 0.75rem; }
+    .future-card .fc-body p:last-child { margin-bottom: 0; }
 
     /* NOTES SECTION */
     .notes-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
@@ -111,9 +113,16 @@
     <div class="section">
       <div class="section-label">About</div>
       <div class="bio-text">
-        <p>Add your bio here — tell your family and friends a little about yourself, your journey, and what this milestone means to you.</p>
-        <p>This is a great place to share what drew you to Information Science, what you've learned, and who you've become along the way.</p>
+        <p>Hi, it’s Paris 😄 — but you probably (definitely) already knew that! You may formerly/presently and affectionately know me as Boogie-Oogie-Woogie or Billy Badass (or if you’re really mean, Little Red Caboose). Fear not, this fully grown woman is still in touch with that energetic, giggly, counter-climbing, barefoot-running-around-in-the-mud child who once wrangled both bull-frog and stray-cat on a hot summer’s day. Today is just the day she truly grows up. The baby of the family is finally losing her training wheels!</p>
       </div>
+      <div id="bio-more" class="bio-text" style="display:none;margin-top:1rem;">
+        <p>I spent four unforgettable years at the University of Michigan studying Political Science with minors in Digital Studies and Gender, Race & Nation. One internship-less summer, an obsession for coding was sparked by a simple online course and never dulled (yes, I made this website)! Too late to switch majors for the third (yes, third) time, I took as many computer science courses as humanly possible before graduating. In shock to many, I eventually abandoned my long-discussed and plenty-hyped plans of attending law school to apply to data science programs instead.</p>
+        <p>Now, let’s back up a bit. This path toward data science truly began with a question that has followed me since childhood and took embarrassingly long to figure out: why do systems so often fail the people who need them the most? As a black student in a predominantly white small town, micro aggressions and overt aggressions were familiar to me. On a yellow school bus at the age of ten, I was set on a journey of understanding as I received my first: A boy poked himself around the edge of my seat, glaring, distracting me from my book. In my imagination, influenced by hours of video-game immersion, he was a glaring red enemy marker. I found false comfort in the belief that if I were pixelated, I could be protected from these atomic realities. Unfortunately, his indicator was incessantly blinking and screamingly immediate. As he inched closer, his threat became louder, brighter, and more real. My internal alarm systems began to blare, and my digital shield weakened. Each encounter was routine, but somehow felt just like the first. He made himself at home in my seat and began his brigade for the day: “Hey monkey lips!” Each day’s assault delivered a new variation of insult, but this marked a turning point in my life. I slowly began to recognize the silent messages that clouded rooms and played on stranger’s faces, beliefs and opinions about my likeness that were out of my control, and as an extension the intersecting worldviews that impact our lived experience.</p>
+        <p>As a first generation college student, I immersed myself in this academic study— first through neuroscience, then political theory, and finally through code. When I met the School of Information de facto via my studies under the Digital Studies department, and discovered that implicit bias doesn't stop at human interaction, but infiltrates our algorithms, our models, and our data, I finally knew exactly where I needed to be.</p>
+        <p>I pursued my MS at UMSI fully funded through the Graduate Guarantee, which is an opportunity I do not take lightly. I expanded my knowledge of the politic to the digital and technical realm. Ethics became more than something that I study, but a facet of who I am. I believe in the transformative power of data and the truth that all realities deserve the light, which I intend to shine moving forward in my career. Graduate school also tested me in ways I never anticipated, both mentally and physically, including a serious health diagnosis that I couldn't have survived without the fantastic support system around me, for which I am endlessly grateful. Thank you to those who showed up and showed out for me over the past seven years. Thank you for your inspiration, words of affirmation, and most of all, your love. As my closest friends and family, I cannot thank you enough.</p>
+        <p>When I'm not being serious, sarcastic, antagonistically annoying about political theory or machine learning, or generally yapping about and doing data science things, you can find me deep in a Doctor Who episode, losing at (some) board games, winning at (most) video games, lost in a (very) good book, or in search of whimsy and adventure. I am a proud daughter, sister, aunt, friend and partner. And today — FINALLY - a Master of Science. 💙</p>
+      </div>
+      <button onclick="toggleBio()" id="bio-toggle" style="background:transparent;border:none;color:var(--maize);font-family:var(--font-mono);font-size:12px;letter-spacing:0.06em;cursor:pointer;padding:0.5rem 0;text-decoration:underline;">Read more →</button>
     </div>
 
     <!-- EDUCATION -->
@@ -282,18 +291,33 @@
 
     <!-- FUTURE PLANS -->
     <div class="section">
-      <div class="section-label">What's next</div>
+      <div class="section-label">What's Next</div>
       <div class="future-card">
         <div class="fc-title">Career</div>
-        <div class="fc-body">Add your future career plans here — what role are you pursuing, what industry excites you, what impact do you want to make?</div>
+        <div class="fc-body">
+          <p>I'm currently actively pursuing full-time roles as a Data Scientist (amongst other related titles)! Yes, the economy is… what it is… so I'm keeping my options open and seeing what fits! I’m happy to share I’m currently in the recruitment process with the National Security Agency (NSA), the United States Patent and Trademark Office (USPTO), and IBM, and I'm excited to see where the journey leads (hopefully not unemployment).</p>
+          <p>What I know for certain is that <a href="https://medium.com/stem-and-culture-chronicle/crunching-the-numbers-on-diversity-in-data-science-events-resources-to-foster-inclusion-5dc81d2ab52" target="_blank" style="color:var(--maize);text-decoration:none;border-bottom:0.5px solid rgba(255,203,5,0.3);">less than 3% of data scientists are women of color</a>, and I intend to be one of them, opening doors for those who come after me. As for those curious about a PhD, the answer is maybe. Everyone and their mom is apparently convinced I am destined to become a professor... they might not be wrong, but they also might not be right. We'll see where the wind blows in a few years. If I do pursue one, it would be in Machine Learning. Keep your eyes peeled. 👀</p>
+        </div>
       </div>
       <div class="future-card">
         <div class="fc-title">Goals</div>
-        <div class="fc-body">Add your personal goals here — things you want to accomplish, places you want to go, ways you want to grow.</div>
+        <div class="fc-body">
+          <ul style="padding-left:1.25rem;display:flex;flex-direction:column;gap:6px;">
+            <li>Get better at snowboarding! Evan has been patiently teaching me for two seasons and I can officially announce I can make it down a green without falling! 🏂</li>
+            <li>Go backpacking for the first time! 🥾</li>
+            <li>Contribute to some open source projects and give my knowledge back to the community for free! 💻</li>
+            <li>Adopt ANOTHER orange cat (demon) to keep Finn company 🐈</li>
+            <li>Pay off my student loans 🤢</li>
+            <li>Pursue a PhD in Machine Learning... maybe 🎓</li>
+          </ul>
+        </div>
       </div>
       <div class="future-card">
         <div class="fc-title">Dreams</div>
-        <div class="fc-body">Add your bigger dreams here — the ambitious, long-term things that excite you about the future.</div>
+        <div class="fc-body">
+          <p>In ten years, I hope to be settled somewhere with mountains, snow, and water. Ultimately, I want a life that feels grounded, intentional, and is full of the people and things I love most.</p>
+          <p>I hope to become embedded in whatever community I end up in, living a life of service, and giving back in any and every way I can. If I have enough acreage, I’ll buy a heifer and name it Daisy (thank you Momma and my late Grandpa Hoogendoorn for the inspiration). 🐄 Maybe a couple of chickens too. 🐓</p>
+        </div>
       </div>
     </div>
 
@@ -402,6 +426,16 @@
       errEl.classList.remove("hidden");
     }
   };
+</script>
+
+<script>
+  function toggleBio() {
+    const more = document.getElementById("bio-more");
+    const btn  = document.getElementById("bio-toggle");
+    const open = more.style.display === "block";
+    more.style.display = open ? "none" : "block";
+    btn.textContent = open ? "Read more →" : "← Read less";
+  }
 </script>
 </body>
 </html>
