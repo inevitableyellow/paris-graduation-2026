@@ -162,14 +162,22 @@
   <!-- INVITE LINK GENERATOR -->
   <div class="section-title" style="margin-top:0.5rem;">Invite link generator</div>
   <div class="add-form">
-    <div class="form-row">
-      <input id="invite-gen-code" placeholder="Guest invite code (e.g. GRAD-XXXX)" style="font-family:var(--mono);letter-spacing:0.06em;" />
-      <input id="invite-gen-name" placeholder="Guest's first name" />
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Add one or more guests to generate a single group message with all their codes.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+      <select id="invite-guest-picker" style="flex:1;min-width:160px;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.2);border-radius:7px;color:white;font-size:13px;padding:8px 10px;cursor:pointer;font-family:var(--font);">
+        <option value="">— Pick from guest list —</option>
+      </select>
+      <button class="btn-outline" onclick="addInviteGuestFromPicker()">+ Add selected</button>
+      <button class="btn-outline" onclick="addInviteGuest()">+ Add manually</button>
+    </div>
+    <div id="invite-guests-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
       <button class="btn" onclick="generateInviteMessage()">Generate message</button>
+      <button class="btn-outline" onclick="clearInviteGuests()" style="color:#f09595;border-color:rgba(240,149,149,0.3);">Clear all</button>
     </div>
     <div id="invite-box-wrap" class="hidden">
       <div class="invite-box">
-        <div class="invite-code-display" id="invite-display-code"></div>
+        <div class="invite-code-display" id="invite-display-code" style="font-size:13px;line-height:1.8;"></div>
         <div class="invite-msg-preview" id="invite-msg-preview"></div>
         <div class="invite-actions">
           <button class="btn-copy" onclick="copyInviteMessage()">Copy message</button>
@@ -201,6 +209,11 @@
   <div class="section-title">Photos</div>
   <div id="photo-admin-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No photos uploaded yet.</div>
   <div id="photo-admin-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:2rem;"></div>
+
+  <!-- RSVP MESSAGES -->
+  <div class="section-title">RSVP messages</div>
+  <div id="rsvp-msgs-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No messages yet.</div>
+  <div id="rsvp-msgs-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;"></div>
 
   <!-- NOTES MANAGEMENT -->
   <div class="section-title">Notes for the future</div>
@@ -237,6 +250,7 @@
       loadGuests();
       loadAdminPhotos();
       loadAdminNotes();
+      loadRsvpMessages();
     } else {
       msgEl.classList.remove("hidden");
     }
@@ -252,6 +266,7 @@
     snap.forEach(d => guests.push({ code: d.id, ...d.data() }));
     renderTable();
     renderStats();
+    populateInvitePicker();
   }
 
   function renderStats() {
@@ -273,7 +288,10 @@
       tr.innerHTML = `
         <td data-label="Name">${g.name || "<span style='color:var(--dim)'>Not yet set</span>"}</td>
         <td data-label="Relationship" style="color:var(--muted)">${g.relationship || "–"}</td>
-        <td data-label="Code"><span class="mono-sm">${g.code}</span></td>
+        <td data-label="Code">
+          <span class="mono-sm">${g.code}</span>
+          <button onclick="navigator.clipboard.writeText('${g.code}').then(() => { this.textContent='✓'; setTimeout(() => this.textContent='Copy', 1500); })" style="background:transparent;border:0.5px solid rgba(255,255,255,0.2);border-radius:5px;color:var(--muted);font-size:10px;padding:2px 6px;cursor:pointer;margin-left:6px;">Copy</button>
+        </td>
         <td data-label="Status">
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
             ${statusBadge(g.status)}
@@ -387,21 +405,109 @@
 
 
   // ─── INVITE MESSAGE GENERATOR ─────────────────
+  // ─── INVITE MESSAGE GENERATOR ─────────────────
+  let inviteGuests = [];
+
+  function populateInvitePicker() {
+    const picker = document.getElementById("invite-guest-picker");
+    if (!picker) return;
+    // Keep default option, rebuild the rest
+    picker.innerHTML = '<option value="">— Pick from guest list —</option>';
+    guests.forEach(g => {
+      if (!g.code) return;
+      const opt = document.createElement("option");
+      opt.value = g.code;
+      opt.textContent = `${g.name || "Unnamed"} · ${g.code}`;
+      picker.appendChild(opt);
+    });
+  }
+
+  window.addInviteGuestFromPicker = function() {
+    const picker = document.getElementById("invite-guest-picker");
+    const code   = picker.value;
+    if (!code) { alert("Please select a guest first."); return; }
+    const guest  = guests.find(g => g.code === code);
+    if (!guest)  { alert("Guest not found."); return; }
+    if (inviteGuests.some(g => g.code === code)) { alert("That guest is already in the list."); return; }
+
+    // Fill first empty slot if one exists, otherwise add new row
+    const emptyIndex = inviteGuests.findIndex(g => !g.code && !g.name);
+    if (emptyIndex >= 0) {
+      inviteGuests[emptyIndex] = { name: guest.name || "", code: guest.code, type: "adult" };
+    } else {
+      inviteGuests.push({ name: guest.name || "", code: guest.code, type: "adult" });
+    }
+
+    picker.value = "";
+    renderInviteGuestRows();
+  };
+
+  function renderInviteGuestRows() {
+    const list = document.getElementById("invite-guests-list");
+    list.innerHTML = "";
+    if (inviteGuests.length === 0) {
+      addInviteGuest();
+      return;
+    }
+    inviteGuests.forEach((g, i) => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;border:0.5px solid rgba(255,255,255,0.08);";
+      row.innerHTML = `
+        <input value="${g.name}" placeholder="Name (e.g. Mum)" oninput="inviteGuests[${i}].name=this.value" style="flex:1;min-width:100px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.15);border-radius:7px;padding:7px 10px;color:white;font-family:var(--font);font-size:16px;outline:none;" />
+        <input value="${g.code}" placeholder="Invite code" oninput="inviteGuests[${i}].code=this.value.toUpperCase()" style="flex:1;min-width:100px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.15);border-radius:7px;padding:7px 10px;color:white;font-family:var(--mono);font-size:16px;letter-spacing:0.06em;outline:none;" />
+        <select oninput="inviteGuests[${i}].type=this.value" style="background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.2);border-radius:7px;color:white;font-size:13px;padding:7px 8px;cursor:pointer;font-family:var(--font);">
+          <option value="adult" ${g.type==="adult"?"selected":""}>Adult</option>
+          <option value="child" ${g.type==="child"?"selected":""}>Child</option>
+        </select>
+        ${inviteGuests.length > 1 ? `<button onclick="removeInviteGuest(${i})" style="background:transparent;border:none;color:#f09595;font-size:16px;cursor:pointer;padding:4px;">✕</button>` : ""}
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  window.addInviteGuest = function() {
+    inviteGuests.push({ name: "", code: "", type: "adult" });
+    renderInviteGuestRows();
+  };
+
+  window.removeInviteGuest = function(i) {
+    inviteGuests.splice(i, 1);
+    renderInviteGuestRows();
+  };
+
+  window.clearInviteGuests = function() {
+    inviteGuests = [];
+    renderInviteGuestRows();
+    document.getElementById("invite-box-wrap").classList.add("hidden");
+  };
+
   window.generateInviteMessage = function() {
-    const code = document.getElementById("invite-gen-code").value.trim().toUpperCase();
-    const name = document.getElementById("invite-gen-name").value.trim();
-    if (!code) { alert("Please enter an invite code."); return; }
+    const filled = inviteGuests.filter(g => g.code.trim());
+    if (!filled.length) { alert("Please enter at least one invite code."); return; }
 
-    const siteUrl = "https://inevitableyellow.github.io/paris-graduation-2026";
-    const greeting = name ? `Hey ${name}!` : "Hey!";
-    const msg = `${greeting} I'm so excited to celebrate my graduation with you 🎓\n\nHere are all the details for my UMSI Commencement on April 30th:\n${siteUrl}\n\nYour invite code is: ${code}\n\nYou'll need this to access the site, RSVP, and get your ticket. Let me know if you have any questions! 💙`;
+    const siteUrl    = "https://inevitableyellow.github.io/paris-graduation-2026";
+    const firstAdult = filled.find(g => g.type === "adult");
+    const greeting   = firstAdult?.name ? `Hey ${firstAdult.name}!` : "Hey!";
+    const plural     = filled.length > 1;
 
-    document.getElementById("invite-display-code").textContent = code;
+    const codeLines = filled.map(g => {
+      const label = g.name ? `${g.name}'s code` : (g.type === "child" ? "Child's code" : "Your code");
+      return `${label}: ${g.code.trim().toUpperCase()}`;
+    }).join("\n");
+
+    const msg = `${greeting} I'm so excited to celebrate my graduation with you 🎓\n\nHere are all the details for my UMSI Commencement on April 30th:\n${siteUrl}\n\n${codeLines}\n\nYou'll need ${plural ? "these codes" : "this code"} to access the site, RSVP, and get your ticket${plural ? "s" : ""}. Let me know if you have any questions! 💙`;
+
+    document.getElementById("invite-display-code").innerHTML = filled.map(g =>
+      `<span style="display:block;">${g.name ? g.name + " · " : ""}${g.code.trim().toUpperCase()}</span>`
+    ).join("");
     document.getElementById("invite-msg-preview").textContent = msg;
     document.getElementById("invite-sms-link").href = "sms:?body=" + encodeURIComponent(msg);
     document.getElementById("invite-box-wrap").classList.remove("hidden");
     document.getElementById("copy-confirm").style.display = "none";
   };
+
+  // Initialise with one empty row
+  addInviteGuest();
 
   window.copyInviteMessage = function() {
     const msg = document.getElementById("invite-msg-preview").textContent;
@@ -504,6 +610,30 @@
       btn.disabled = false;
     }
   };
+
+  async function loadRsvpMessages() {
+    const list    = document.getElementById("rsvp-msgs-list");
+    const emptyEl = document.getElementById("rsvp-msgs-empty");
+    list.innerHTML = "";
+    try {
+      const snap = await getDocs(collection(db, "guests"));
+      let count = 0;
+      snap.forEach(d => {
+        const g = d.data();
+        if (!g.rsvpMessage) return;
+        count++;
+        emptyEl.style.display = "none";
+        const card = document.createElement("div");
+        card.style.cssText = "background:var(--subtle);border:0.5px solid var(--border);border-radius:10px;padding:1rem;";
+        card.innerHTML = `
+          <div style="font-family:var(--mono);font-size:11px;color:var(--maize);opacity:0.8;margin-bottom:0.4rem;">${g.name || d.id} <span style="color:var(--muted);margin-left:6px;">${g.status || ""}</span></div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.7;">${g.rsvpMessage}</div>
+        `;
+        list.appendChild(card);
+      });
+      if (!count) emptyEl.style.display = "block";
+    } catch (err) { console.error("Failed to load RSVP messages:", err); }
+  }
 
   async function loadAdminNotes() {
     const list    = document.getElementById("notes-admin-list");
