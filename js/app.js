@@ -113,37 +113,53 @@ const MAX_IN_PERSON   = 10;
 function isDeadlinePassed() { return new Date() > RSVP_DEADLINE; }
 
 // ─── RSVP TAB RENDER ──────────────────────────
-// Called when switching to RSVP tab or after login
 window.renderRsvpTab = async function() {
   const formWrap      = document.getElementById("rsvp-form-wrap");
   const confirmedWrap = document.getElementById("rsvp-confirmed");
   const deadlineEl    = document.getElementById("rsvp-deadline-msg");
   const errEl         = document.getElementById("rsvp-error");
+  const noticeEl      = document.getElementById("rsvp-deadline-notice");
 
   errEl.classList.add("hidden");
 
-  // Always hide change button after deadline
+  // Hide change button if deadline passed or locked
   const changeBtn = document.getElementById("change-rsvp-btn");
-  if (changeBtn) changeBtn.style.display = isDeadlinePassed() ? "none" : "inline-block";
+  if (changeBtn) changeBtn.style.display = (isDeadlinePassed() || currentGuest.rsvpLocked) ? "none" : "inline-block";
 
-  // Deadline passed — lock the form
+  // Admin locked — show locked message
+  if (currentGuest.rsvpLocked) {
+    formWrap.classList.add("hidden");
+    confirmedWrap.classList.add("hidden");
+    if (noticeEl) noticeEl.classList.add("hidden");
+    deadlineEl.classList.remove("hidden");
+    document.getElementById("rsvp-lock-title").textContent = "Your RSVP has been set!";
+    document.getElementById("rsvp-lock-body").textContent  = "Your attendance has been confirmed by Paris. Please contact her directly if you need to make any changes.";
+    return;
+  }
+
+  // Deadline passed — show deadline message
   if (isDeadlinePassed()) {
     formWrap.classList.add("hidden");
     confirmedWrap.classList.add("hidden");
+    if (noticeEl) noticeEl.classList.add("hidden");
     deadlineEl.classList.remove("hidden");
+    document.getElementById("rsvp-lock-title").textContent = "RSVP deadline has passed!";
+    document.getElementById("rsvp-lock-body").textContent  = "The deadline to RSVP was April 20th. Please contact Paris directly if you need to make changes.";
     return;
   }
 
   // Guest has already RSVPed — show confirmation with change option
   if (currentGuest.status && currentGuest.status !== "pending") {
+    if (noticeEl) noticeEl.classList.add("hidden");
     showRsvpConfirmed(currentGuest.status);
     return;
   }
 
-  // Default: show the form
+  // Default: show the form with deadline notice
   formWrap.classList.remove("hidden");
   confirmedWrap.classList.add("hidden");
   deadlineEl.classList.add("hidden");
+  if (noticeEl) noticeEl.classList.remove("hidden");
 };
 
 // ─── RSVP SUBMISSION ──────────────────────────
@@ -152,8 +168,8 @@ window.submitRsvp = async function() {
   const status = document.querySelector('input[name="rsvp-status"]:checked')?.value;
   const errEl  = document.getElementById("rsvp-error");
 
-  if (isDeadlinePassed()) {
-    errEl.textContent = "The RSVP deadline has passed. Please contact Paris directly.";
+  if (isDeadlinePassed() || currentGuest.rsvpLocked) {
+    errEl.textContent = "Your RSVP has been locked. Please contact Paris directly to make changes.";
     errEl.classList.remove("hidden");
     return;
   }

@@ -269,11 +269,24 @@
     guests.forEach(g => {
       const tr = document.createElement("tr");
       const hasTicket = !!g.officialTicketUrl;
+      const isLocked  = !!g.rsvpLocked;
       tr.innerHTML = `
         <td data-label="Name">${g.name || "<span style='color:var(--dim)'>Not yet set</span>"}</td>
         <td data-label="Relationship" style="color:var(--muted)">${g.relationship || "–"}</td>
         <td data-label="Code"><span class="mono-sm">${g.code}</span></td>
-        <td data-label="Status">${statusBadge(g.status)}</td>
+        <td data-label="Status">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            ${statusBadge(g.status)}
+            <select onchange="setGuestStatus('${g.code}', this.value)" style="background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-size:12px;padding:3px 6px;cursor:pointer;font-family:var(--font);">
+              <option value="">Set...</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="virtual">Virtual</option>
+              <option value="pending">Pending</option>
+              <option value="declined">Declined</option>
+            </select>
+            <button onclick="toggleRsvpLock('${g.code}', ${isLocked})" style="background:${isLocked ? 'rgba(255,203,5,0.18)' : 'rgba(255,255,255,0.07)'};border:0.5px solid ${isLocked ? 'var(--maize)' : 'rgba(255,255,255,0.2)'};border-radius:6px;color:${isLocked ? 'var(--maize)' : 'var(--muted)'};font-size:11px;padding:3px 8px;cursor:pointer;" title="${isLocked ? 'Unlock RSVP' : 'Lock RSVP'}">${isLocked ? '🔒 Locked' : '🔓 Lock'}</button>
+          </div>
+        </td>
         <td data-label="Ticket">
           ${hasTicket
             ? `<span class="badge b-released" style="margin-right:6px;">Uploaded ✓</span>
@@ -398,6 +411,23 @@
       setTimeout(() => confirm.style.display = "none", 2500);
     });
   };
+  window.setGuestStatus = async function(code, status) {
+    if (!status) return;
+    try {
+      const updates = { status, rsvpedAt: serverTimestamp() };
+      if (status === "virtual") updates.everWasVirtual = true;
+      await updateDoc(doc(db, "guests", code), updates);
+      await loadGuests();
+    } catch (err) { alert("Error: " + err.message); }
+  };
+
+  window.toggleRsvpLock = async function(code, isLocked) {
+    try {
+      await updateDoc(doc(db, "guests", code), { rsvpLocked: !isLocked });
+      await loadGuests();
+    } catch (err) { alert("Error: " + err.message); }
+  };
+
   window.releaseTicket = async function(code) {
     if (!confirm(`Release ticket for ${code}? The guest will be able to view their QR code.`)) return;
     try {
