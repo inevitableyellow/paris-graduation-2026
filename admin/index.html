@@ -201,6 +201,11 @@
   <div class="section-title">Photos</div>
   <div id="photo-admin-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No photos uploaded yet.</div>
   <div id="photo-admin-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:2rem;"></div>
+
+  <!-- NOTES MANAGEMENT -->
+  <div class="section-title">Notes for the future</div>
+  <div id="notes-admin-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No notes yet.</div>
+  <div id="notes-admin-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;"></div>
 </div>
 
 <script type="module">
@@ -231,6 +236,7 @@
       document.getElementById("admin-panel").classList.remove("hidden");
       loadGuests();
       loadAdminPhotos();
+      loadAdminNotes();
     } else {
       msgEl.classList.remove("hidden");
     }
@@ -466,6 +472,46 @@
       alert("Failed to delete: " + err.message);
       btn.textContent = "Delete";
       btn.disabled = false;
+    }
+  };
+
+  async function loadAdminNotes() {
+    const list    = document.getElementById("notes-admin-list");
+    const emptyEl = document.getElementById("notes-admin-empty");
+    list.innerHTML = "";
+
+    try {
+      const snap = await getDocs(collection(db, "notes"));
+      if (snap.empty) { emptyEl.style.display = "block"; return; }
+      emptyEl.style.display = "none";
+      snap.forEach(d => {
+        const { author, text, createdAt } = d.data();
+        const id   = d.id;
+        const date = createdAt?.toDate ? createdAt.toDate().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";
+        const card = document.createElement("div");
+        card.style.cssText = "background:var(--subtle);border:0.5px solid var(--border);border-radius:10px;padding:1rem;position:relative;";
+        card.innerHTML = `
+          <div style="font-family:var(--mono);font-size:11px;color:var(--maize);opacity:0.8;margin-bottom:0.4rem;">${author || "Anonymous"}</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.7;white-space:pre-wrap;">${text}</div>
+          ${date ? `<div style="font-size:11px;color:var(--dim);margin-top:0.4rem;">${date}</div>` : ""}
+          <button onclick="deleteNote('${id}', this)" style="position:absolute;top:10px;right:10px;background:rgba(163,45,45,0.85);color:white;border:none;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;">Delete</button>
+        `;
+        list.appendChild(card);
+      });
+    } catch (err) { console.error("Failed to load notes:", err); }
+  }
+
+  window.deleteNote = async function(id, btn) {
+    if (!confirm("Delete this note? This cannot be undone.")) return;
+    btn.textContent = "..."; btn.disabled = true;
+    try {
+      await deleteDoc(doc(db, "notes", id));
+      btn.closest("div[style]").remove();
+      const list = document.getElementById("notes-admin-list");
+      if (!list.children.length) document.getElementById("notes-admin-empty").style.display = "block";
+    } catch (err) {
+      alert("Failed to delete: " + err.message);
+      btn.textContent = "Delete"; btn.disabled = false;
     }
   };
 </script>
