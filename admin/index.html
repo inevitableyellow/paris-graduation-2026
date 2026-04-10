@@ -418,10 +418,10 @@
 
       // Delete from Storage
       try {
-        const fileRef = ref(storage, url);
+        const filePath = decodeURIComponent(url.split('/o/')[1].split('?')[0]);
+        const fileRef = ref(storage, filePath);
         await deleteObject(fileRef);
       } catch (e) {
-        // If storage delete fails, Firestore record is still removed
         console.warn("Storage delete failed:", e.message);
       }
 
