@@ -149,11 +149,17 @@ window.submitRsvp = async function() {
     return;
   }
 
+  // Warn before submitting virtual — this is permanent
+  if (status === "virtual" && !currentGuest.everWasVirtual) {
+    const confirmed = window.confirm("Are you sure you want to attend virtually? Once confirmed, you will not be able to change to in-person attendance without contacting Paris directly. Your ticket will be released to other guests.");
+    if (!confirmed) return;
+  }
+
   // Check ticket cap for in-person (exclude current guest's existing status to allow changes)
   if (status === "confirmed") {
-    // Block virtual guests from self-upgrading to in-person
-    if (currentGuest.status === "virtual") {
-      errEl.textContent = "You're currently registered as a virtual attendee. To change to in-person, please contact Paris directly as this affects ticket allocation.";
+    // Block virtual guests from self-upgrading to in-person — even if they changed to declined first
+    if (currentGuest.everWasVirtual || currentGuest.status === "virtual") {
+      errEl.textContent = "You were previously registered as a virtual attendee. To change to in-person, please contact Paris directly as this affects ticket allocation.";
       errEl.classList.remove("hidden");
       return;
     }
@@ -174,12 +180,15 @@ window.submitRsvp = async function() {
   errEl.classList.add("hidden");
 
   try {
-    await updateDoc(doc(db, "guests", currentGuest.code), {
-      name, status, rsvpedAt: serverTimestamp()
-    });
+    // If selecting virtual for the first time, record it permanently
+    const updates = { name, status, rsvpedAt: serverTimestamp() };
+    if (status === "virtual") updates.everWasVirtual = true;
+
+    await updateDoc(doc(db, "guests", currentGuest.code), updates);
 
     currentGuest.name   = name;
     currentGuest.status = status;
+    if (status === "virtual") currentGuest.everWasVirtual = true;
     showRsvpConfirmed(status);
 
   } catch (err) {
@@ -205,11 +214,11 @@ window.changeRsvp = function() {
   const radio = document.querySelector(`input[name="rsvp-status"][value="${currentGuest.status}"]`);
   if (radio) radio.checked = true;
 
-  // If currently virtual, disable in-person option and show note
+  // If currently virtual or ever was virtual, disable in-person option and show note
   const inPersonRadio = document.querySelector('input[name="rsvp-status"][value="confirmed"]');
   const inPersonNote  = document.getElementById("inperson-note");
   const inPersonLabel = document.getElementById("option-confirmed");
-  if (currentGuest.status === "virtual") {
+  if (currentGuest.status === "virtual" || currentGuest.everWasVirtual) {
     inPersonRadio.disabled = true;
     inPersonLabel.style.opacity = "0.4";
     inPersonLabel.style.cursor  = "not-allowed";
