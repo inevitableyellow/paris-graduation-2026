@@ -83,8 +83,48 @@
           <div class="info-location">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
             Crisler Center, 333 E Stadium Blvd, Ann Arbor, MI 48109
-            <a href="https://maps.apple.com/?address=333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109&q=Crisler+Center" target="_blank" style="font-family:var(--font-mono);font-size:11px;color:var(--maize);text-decoration:none;border-bottom:0.5px solid rgba(255,203,5,0.3);margin-left:8px;white-space:nowrap;">Open in Maps →</a>
           </div>
+
+          <!-- CLICKABLE MAP -->
+          <div style="margin-top:0.75rem;border-radius:var(--radius-sm);overflow:hidden;border:0.5px solid var(--border-subtle);cursor:pointer;position:relative;" onclick="openMapsChooser()">
+            <img
+              src="https://staticmap.openstreetmap.de/staticmap.php?center=42.2780,-83.7430&zoom=16&size=680x200&markers=42.2780,-83.7430,red"
+              alt="Map of Crisler Center"
+              style="width:100%;display:block;height:160px;object-fit:cover;"
+              loading="lazy"
+            />
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);">
+              <span style="font-family:var(--font-mono);font-size:12px;color:white;background:rgba(0,39,76,0.85);padding:6px 14px;border-radius:999px;border:0.5px solid rgba(255,203,5,0.4);">Tap to open directions →</span>
+            </div>
+          </div>
+
+          <!-- MAPS CHOOSER MODAL -->
+          <div id="maps-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;">
+            <div style="background:#001a36;border:0.5px solid rgba(255,203,5,0.3);border-radius:var(--radius);padding:1.75rem 1.5rem;max-width:320px;width:100%;">
+              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.6rem;">Get directions</div>
+              <div style="font-family:var(--font-display);font-size:20px;color:var(--white);margin-bottom:0.25rem;">Crisler Center</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">333 E Stadium Blvd, Ann Arbor, MI</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <a href="https://maps.apple.com/?address=333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109&q=Crisler+Center&dirflg=d" target="_blank" onclick="closeMapsModal()" style="display:block;padding:12px;text-align:center;background:var(--maize);color:var(--navy-dark);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Apple Maps</a>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=Crisler+Center,+333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109" target="_blank" onclick="closeMapsModal()" style="display:block;padding:12px;text-align:center;background:transparent;color:var(--maize);border:0.5px solid var(--maize);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Google Maps</a>
+                <button onclick="closeMapsModal()" style="padding:10px;background:transparent;color:var(--text-muted);border:none;font-family:var(--font-body);font-size:13px;cursor:pointer;">Cancel</button>
+              </div>
+            </div>
+          </div>
+          <script>
+            window.openMapsChooser = function() {
+              document.getElementById("maps-modal").style.display = "flex";
+              document.body.style.overflow = "hidden";
+            };
+            window.closeMapsModal = function() {
+              document.getElementById("maps-modal").style.display = "none";
+              document.body.style.overflow = "";
+            };
+            document.getElementById("maps-modal")?.addEventListener("click", function(e) {
+              if (e.target === this) window.closeMapsModal();
+            });
+          </script>
+
           <a href="https://umsi.info/gradlive" target="_blank" class="info-link">Watch the livestream → umsi.info/gradlive</a>
         </div>
 
