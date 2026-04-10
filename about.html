@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Paris · Graduation 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #00274C; --navy-dark: #001a36; --maize: #FFCB05;
+      --maize-dim: rgba(255,203,5,0.12); --white: #fff;
+      --text-muted: rgba(255,255,255,0.55); --text-dim: rgba(255,255,255,0.35);
+      --border: rgba(255,203,5,0.2); --border-subtle: rgba(255,255,255,0.08);
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif; --font-mono: 'DM Mono', monospace;
+      --radius: 12px; --radius-sm: 8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-body); background: var(--navy-dark); color: var(--white); min-height: 100vh; }
+
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--maize); text-decoration: none; opacity: 0.7; transition: opacity 0.15s; padding: 1.25rem 1.25rem 0; }
+    .back-btn:hover { opacity: 1; }
+
+    .hero { background: var(--navy); border-bottom: 2px solid var(--maize); padding: 2rem 1.25rem 1.75rem; }
+    .hero-inner { max-width: 680px; margin: 0 auto; }
+    .hero-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--maize); opacity: 0.8; margin-bottom: 0.5rem; }
+    .hero-name { font-family: var(--font-display); font-size: clamp(36px, 8vw, 56px); font-weight: 500; color: var(--white); line-height: 1.05; margin-bottom: 0.5rem; }
+    .hero-degree { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+    .content { max-width: 680px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+    .section { margin-bottom: 2.5rem; }
+    .section-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--maize); opacity: 0.7; margin-bottom: 1rem; }
+
+    .bio-text { font-size: 15px; color: var(--text-muted); line-height: 1.8; }
+    .bio-text p { margin-bottom: 1rem; }
+    .bio-text p:last-child { margin-bottom: 0; }
+
+    .timeline { border-left: 1px solid var(--border); padding-left: 1.5rem; }
+    .tl-item { position: relative; margin-bottom: 1.5rem; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-dot { position: absolute; left: -1.625rem; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--maize); border: 2px solid var(--navy-dark); }
+    .tl-year { font-family: var(--font-mono); font-size: 11px; color: var(--maize); opacity: 0.85; margin-bottom: 3px; }
+    .tl-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 2px; }
+    .tl-sub { font-size: 13px; color: var(--text-muted); }
+
+    .skills-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-tag { font-family: var(--font-mono); font-size: 12px; padding: 5px 12px; border-radius: 999px; background: var(--maize-dim); color: var(--maize); border: 0.5px solid var(--border); }
+
+    .future-card { background: rgba(255,255,255,0.04); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 10px; }
+    .future-card .fc-icon { font-size: 20px; margin-bottom: 0.5rem; }
+    .future-card .fc-title { font-size: 15px; font-weight: 500; color: var(--white); margin-bottom: 0.25rem; }
+    .future-card .fc-body { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+    /* NOTES SECTION */
+    .notes-divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+    .note-form { background: rgba(255,255,255,0.04); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem; }
+    .note-input { width: 100%; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding: 11px 14px; color: var(--white); font-family: var(--font-body); font-size: 14px; outline: none; transition: border-color 0.2s; resize: vertical; min-height: 100px; }
+    .note-input:focus { border-color: var(--maize); }
+    .note-input::placeholder { color: var(--text-dim); }
+    .note-name-input { width: 100%; background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.15); border-radius: var(--radius-sm); padding: 11px 14px; color: var(--white); font-family: var(--font-body); font-size: 14px; outline: none; transition: border-color 0.2s; margin-bottom: 10px; }
+    .note-name-input:focus { border-color: var(--maize); }
+    .note-name-input::placeholder { color: var(--text-dim); }
+    .btn-primary { background: var(--maize); color: var(--navy-dark); border: none; border-radius: var(--radius-sm); padding: 11px 24px; font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s; }
+    .btn-primary:hover { background: #e6b800; }
+
+    .note-card { background: rgba(255,255,255,0.03); border: 0.5px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 1rem 1.25rem; margin-bottom: 10px; }
+    .note-author { font-family: var(--font-mono); font-size: 11px; color: var(--maize); opacity: 0.8; margin-bottom: 0.4rem; }
+    .note-text { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+    .note-date { font-size: 11px; color: var(--text-dim); margin-top: 0.4rem; }
+    .error-msg { font-size: 12px; color: #f09595; margin-bottom: 0.75rem; }
+    .hidden { display: none !important; }
+
+    /* GATE */
+    #gate-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+    .gate-input { background: rgba(255,255,255,0.05); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 12px 16px; color: var(--white); font-family: var(--font-mono); font-size: 15px; letter-spacing: 0.1em; outline: none; width: min(280px, 100%); text-align: center; transition: border-color 0.2s; }
+    .gate-input:focus { border-color: var(--maize); }
+  </style>
+</head>
+<body>
+
+<!-- GATE SCREEN -->
+<div id="gate-screen">
+  <div style="width:64px;height:64px;border-radius:50%;border:1.5px solid var(--maize);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:13px;letter-spacing:0.12em;color:var(--maize);margin-bottom:1.75rem;">U · M</div>
+  <h1 style="font-family:var(--font-display);font-size:clamp(28px,7vw,38px);font-weight:500;color:var(--white);margin-bottom:0.4rem;">About Paris</h1>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:2rem;">Enter your invite code to continue</p>
+  <input id="gate-input" class="gate-input" type="text" placeholder="e.g. GRAD-XXXX" autocomplete="off" spellcheck="false" />
+  <div id="gate-error" class="error-msg hidden" style="margin-top:0.75rem;max-width:280px;"></div>
+  <button class="btn-primary" onclick="verifyGate()" style="margin-top:0.75rem;width:min(280px,100%);">Continue →</button>
+</div>
+
+<!-- ABOUT PAGE -->
+<div id="about-page" class="hidden">
+  <a href="index.html" class="back-btn">← Back to graduation site</a>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">University of Michigan · School of Information</div>
+      <h1 class="hero-name">Paris <span style="font-style:italic;color:var(--maize);">Heard</span></h1>
+      <p class="hero-degree">Master of Science in Information · Data Science & Machine Learning · Class of 2026</p>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- BIO -->
+    <div class="section">
+      <div class="section-label">About</div>
+      <div class="bio-text">
+        <p>Add your bio here — tell your family and friends a little about yourself, your journey, and what this milestone means to you.</p>
+        <p>This is a great place to share what drew you to Information Science, what you've learned, and who you've become along the way.</p>
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="section">
+      <div class="section-label">Education</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2024 – 2026</div>
+          <div class="tl-title">Master of Science in Information</div>
+          <div class="tl-sub">University of Michigan School of Information · Data Science & Machine Learning</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-year">Add year</div>
+          <div class="tl-title">Add your undergraduate degree here</div>
+          <div class="tl-sub">Institution name</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="section">
+      <div class="section-label">Experience</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-year">Add year</div>
+          <div class="tl-title">Add your experience here</div>
+          <div class="tl-sub">Company or organisation · Role</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-year">Add year</div>
+          <div class="tl-title">Add more experience</div>
+          <div class="tl-sub">Company or organisation · Role</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="section">
+      <div class="section-label">Skills & tools</div>
+      <div class="skills-grid">
+        <span class="skill-tag">Python</span>
+        <span class="skill-tag">Machine Learning</span>
+        <span class="skill-tag">Data Science</span>
+        <span class="skill-tag">SQL</span>
+        <span class="skill-tag">Add more skills →</span>
+      </div>
+    </div>
+
+    <!-- FUTURE PLANS -->
+    <div class="section">
+      <div class="section-label">What's next</div>
+      <div class="future-card">
+        <div class="fc-title">Career</div>
+        <div class="fc-body">Add your future career plans here — what role are you pursuing, what industry excites you, what impact do you want to make?</div>
+      </div>
+      <div class="future-card">
+        <div class="fc-title">Goals</div>
+        <div class="fc-body">Add your personal goals here — things you want to accomplish, places you want to go, ways you want to grow.</div>
+      </div>
+      <div class="future-card">
+        <div class="fc-title">Dreams</div>
+        <div class="fc-body">Add your bigger dreams here — the ambitious, long-term things that excite you about the future.</div>
+      </div>
+    </div>
+
+    <!-- NOTES SECTION -->
+    <hr class="notes-divider" />
+    <div class="section">
+      <div class="section-label">Notes for the future</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:1.5rem;">Leave Paris a note, a memory, a piece of advice, or a wish for the future. She'll be able to look back on these. 💙</p>
+
+      <div class="note-form">
+        <input id="note-author" class="note-name-input" type="text" placeholder="Your name" />
+        <textarea id="note-text" class="note-input" placeholder="Write your note here..."></textarea>
+        <div id="note-error" class="error-msg hidden" style="margin-top:8px;"></div>
+        <button class="btn-primary" onclick="submitNote()" style="margin-top:10px;">Leave a note →</button>
+        <div id="note-success" class="hidden" style="font-size:13px;color:#5DCAA5;margin-top:8px;">Your note has been saved!</div>
+      </div>
+
+      <div id="notes-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+  import { db } from "./js/firebase.js";
+  import { doc, getDoc, collection, getDocs, addDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  let guestName = "";
+
+  // ─── GATE ─────────────────────────────────────
+  window.verifyGate = async function() {
+    const code = document.getElementById("gate-input").value.trim().toUpperCase();
+    const errEl = document.getElementById("gate-error");
+    if (!code) { errEl.textContent = "Please enter your invite code."; errEl.classList.remove("hidden"); return; }
+
+    try {
+      const snap = await getDoc(doc(db, "guests", code));
+      if (!snap.exists()) { errEl.textContent = "That code doesn't match our guest list."; errEl.classList.remove("hidden"); return; }
+      guestName = snap.data().name || "";
+      if (guestName) document.getElementById("note-author").value = guestName;
+      document.getElementById("gate-screen").classList.add("hidden");
+      document.getElementById("about-page").classList.remove("hidden");
+      loadNotes();
+    } catch { errEl.textContent = "Something went wrong. Please try again."; errEl.classList.remove("hidden"); }
+  };
+
+  document.getElementById("gate-input").addEventListener("keydown", e => { if (e.key === "Enter") window.verifyGate(); });
+
+  // ─── NOTES ────────────────────────────────────
+  async function loadNotes() {
+    const list = document.getElementById("notes-list");
+    list.innerHTML = "";
+    try {
+      const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+      const snap = await getDocs(q);
+      snap.forEach(d => appendNote(d.data()));
+    } catch (err) { console.error(err); }
+  }
+
+  function appendNote(data) {
+    const list = document.getElementById("notes-list");
+    const card = document.createElement("div");
+    card.className = "note-card";
+    const date = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "";
+    card.innerHTML = `
+      <div class="note-author">${data.author || "Anonymous"}</div>
+      <div class="note-text">${data.text.replace(/\n/g, "<br>")}</div>
+      ${date ? `<div class="note-date">${date}</div>` : ""}
+    `;
+    list.appendChild(card);
+  }
+
+  window.submitNote = async function() {
+    const author = document.getElementById("note-author").value.trim();
+    const text   = document.getElementById("note-text").value.trim();
+    const errEl  = document.getElementById("note-error");
+    const successEl = document.getElementById("note-success");
+
+    if (!text) { errEl.textContent = "Please write something before submitting."; errEl.classList.remove("hidden"); return; }
+    errEl.classList.add("hidden");
+
+    try {
+      const noteData = { author: author || "Anonymous", text, createdAt: serverTimestamp() };
+      await addDoc(collection(db, "notes"), noteData);
+      document.getElementById("note-text").value = "";
+      successEl.classList.remove("hidden");
+      setTimeout(() => successEl.classList.add("hidden"), 3000);
+      appendNote({ ...noteData, createdAt: { toDate: () => new Date() } });
+    } catch (err) {
+      errEl.textContent = "Something went wrong. Please try again.";
+      errEl.classList.remove("hidden");
+    }
+  };
+</script>
+</body>
+</html>
