@@ -213,8 +213,8 @@
       <div class="content-wrap">
         <div id="rsvp-form-wrap">
           <div id="rsvp-deadline-notice" style="background:rgba(255,203,5,0.08);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-muted);">
-            <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--maize);opacity:0.8;margin-right:8px;">RSVP Deadline</span>
-            April 20, 2026 — Please confirm your attendance before then!
+            <span style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--maize);opacity:0.8;margin-right:8px;">RSVP deadline</span>
+            April 20, 2026 — please confirm your attendance before then!
           </div>
           <p class="rsvp-intro">Please confirm your attendance below. If bringing a child over 2, add them as a separate guest — they will need their own ticket.</p>
 
@@ -253,7 +253,12 @@
         <div id="rsvp-deadline-msg" class="hidden" style="text-align:center;padding:3rem 1rem;">
           <div style="font-size:32px;margin-bottom:1rem;">🔒</div>
           <div style="font-family:var(--font-display);font-size:22px;color:var(--white);margin-bottom:0.5rem;" id="rsvp-lock-title">RSVP deadline has passed</div>
-          <div style="font-size:14px;color:var(--text-muted);line-height:1.7;" id="rsvp-lock-body">The deadline to RSVP was April 20th. Please contact Paris directly if you need to make changes.</div>
+          <div style="font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:1rem;" id="rsvp-lock-body">The deadline to RSVP was April 20th. Please contact Paris directly if you need to make changes.</div>
+          <div id="rsvp-lock-status-wrap" class="hidden" style="margin-bottom:1.25rem;">
+            <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.5rem;">Your RSVP</div>
+            <div id="rsvp-lock-status-badge" style="display:inline-block;"></div>
+          </div>
+          <a id="rsvp-text-paris-btn" href="" style="display:inline-block;background:rgba(255,203,5,0.1);border:0.5px solid var(--border);color:var(--maize);border-radius:var(--radius-sm);padding:10px 20px;font-family:var(--font-body);font-size:13px;text-decoration:none;margin-top:0.25rem;">💬 Text Paris if this is incorrect</a>
         </div>
 
         <div id="rsvp-confirmed" class="rsvp-success hidden">

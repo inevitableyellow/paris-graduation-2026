@@ -109,6 +109,30 @@ function showModal(title, body, eyebrow) {
 }
 const RSVP_DEADLINE   = new Date("2026-04-20T23:59:59-04:00");
 const MAX_IN_PERSON   = 10;
+const PARIS_PHONE     = "+16165660701";
+
+function showLockStatus() {
+  const statusWrap = document.getElementById("rsvp-lock-status-wrap");
+  const statusBadge = document.getElementById("rsvp-lock-status-badge");
+  const textBtn = document.getElementById("rsvp-text-paris-btn");
+
+  if (currentGuest.status && currentGuest.status !== "pending") {
+    const colors = {
+      confirmed: { bg: "rgba(29,158,117,0.18)", color: "#5DCAA5", label: "Attending in person" },
+      virtual:   { bg: "rgba(55,138,221,0.18)",  color: "#85B7EB", label: "Attending virtually" },
+      declined:  { bg: "rgba(226,75,74,0.18)",   color: "#E24B4A", label: "Unable to attend" },
+      pending:   { bg: "rgba(239,159,39,0.18)",   color: "#EF9F27", label: "Pending" },
+    };
+    const s = colors[currentGuest.status] || colors.pending;
+    statusBadge.textContent = s.label;
+    statusBadge.style.cssText = `background:${s.bg};color:${s.color};font-family:var(--font-mono);font-size:12px;padding:5px 14px;border-radius:999px;`;
+    statusWrap.classList.remove("hidden");
+  }
+
+  // Pre-fill text message with guest name and status
+  const msg = `Hi Paris! I'm checking about my graduation RSVP — it shows as "${currentGuest.status || "not set"}" but I think there may be an error. Could you help? (Code: ${currentGuest.code})`;
+  textBtn.href = `sms:${PARIS_PHONE}&body=${encodeURIComponent(msg)}`;
+}
 
 function isDeadlinePassed() { return new Date() > RSVP_DEADLINE; }
 
@@ -132,8 +156,9 @@ window.renderRsvpTab = async function() {
     confirmedWrap.classList.add("hidden");
     if (noticeEl) noticeEl.classList.add("hidden");
     deadlineEl.classList.remove("hidden");
-    document.getElementById("rsvp-lock-title").textContent = "Your RSVP has been set!";
-    document.getElementById("rsvp-lock-body").textContent  = "Your attendance has been confirmed by Paris. Please contact her directly if you need to make any changes.";
+    document.getElementById("rsvp-lock-title").textContent = "Your RSVP has been set";
+    document.getElementById("rsvp-lock-body").textContent  = "Your attendance has been confirmed by Paris. If this is incorrect, please reach out to her directly.";
+    showLockStatus();
     return;
   }
 
@@ -143,8 +168,9 @@ window.renderRsvpTab = async function() {
     confirmedWrap.classList.add("hidden");
     if (noticeEl) noticeEl.classList.add("hidden");
     deadlineEl.classList.remove("hidden");
-    document.getElementById("rsvp-lock-title").textContent = "RSVP deadline has passed!";
-    document.getElementById("rsvp-lock-body").textContent  = "The deadline to RSVP was April 20th. Please contact Paris directly if you need to make changes.";
+    document.getElementById("rsvp-lock-title").textContent = "RSVP deadline has passed";
+    document.getElementById("rsvp-lock-body").textContent  = "The deadline to RSVP was April 20th. If you need to make changes, please reach out to Paris directly.";
+    showLockStatus();
     return;
   }
 
