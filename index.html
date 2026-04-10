@@ -87,12 +87,12 @@
 
           <!-- CLICKABLE MAP -->
           <div style="margin-top:0.75rem;border-radius:var(--radius-sm);overflow:hidden;border:0.5px solid var(--border-subtle);cursor:pointer;position:relative;" onclick="openMapsChooser()">
-            <img
-              src="https://staticmap.openstreetmap.de/staticmap.php?center=42.2780,-83.7430&zoom=16&size=680x200&markers=42.2780,-83.7430,red"
-              alt="Map of Crisler Center"
-              style="width:100%;display:block;height:160px;object-fit:cover;"
+            <iframe
+              src="https://www.openstreetmap.org/export/embed.html?bbox=-83.7510,42.2750,-83.7380,42.2810&layer=mapnik&marker=42.2780,-83.7430"
+              style="width:100%;height:160px;border:none;display:block;"
               loading="lazy"
-            />
+              title="Crisler Center map"
+            ></iframe>
             <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.25);">
               <span style="font-family:var(--font-mono);font-size:12px;color:white;background:rgba(0,39,76,0.85);padding:6px 14px;border-radius:999px;border:0.5px solid rgba(255,203,5,0.4);">Tap to open directions →</span>
             </div>
