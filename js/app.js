@@ -38,6 +38,7 @@ window.switchTab = function(tab) {
   });
   document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
   document.getElementById(`tab-${tab}`).classList.add("active");
+  sessionStorage.setItem("activeTab", tab);
 
   if (tab === "rsvp")   window.renderRsvpTab();
   if (tab === "ticket") renderTicket();
@@ -70,6 +71,13 @@ window.verifyInvite = async function() {
     document.getElementById("login-screen").classList.add("hidden");
     document.getElementById("main-screen").classList.remove("hidden");
 
+    // Load weather for graduation day
+    loadWeather();
+
+    // Restore last active tab
+    const savedTab = sessionStorage.getItem("activeTab");
+    if (savedTab && savedTab !== "info") window.switchTab(savedTab);
+
     // Pre-fill RSVP name if already set
     if (currentGuest.name) {
       document.getElementById("rsvp-name").value = currentGuest.name;
@@ -86,6 +94,44 @@ window.verifyInvite = async function() {
 document.getElementById("invite-input").addEventListener("keydown", e => {
   if (e.key === "Enter") window.verifyInvite();
 });
+
+// ─── ADD TO CALENDAR ──────────────────────────
+window.addToCalendar = function() {
+  const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isMac     = /macintosh/i.test(navigator.userAgent) && !window.MSStream;
+  const isAndroid = /android/i.test(navigator.userAgent);
+
+  if (isIOS || isMac) {
+    // Apple Calendar via .ics
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VEVENT",
+      `DTSTART:${EVENT.startUTC}`,
+      `DTEND:${EVENT.endUTC}`,
+      `SUMMARY:${EVENT.title}`,
+      `LOCATION:${EVENT.location}`,
+      `DESCRIPTION:${EVENT.description}`,
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].join("\n");
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = "paris-graduation.ics"; a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    // Google Calendar
+    const params = new URLSearchParams({
+      action:   "TEMPLATE",
+      text:     EVENT.title,
+      dates:    `${EVENT.startUTC}/${EVENT.endUTC}`,
+      location: EVENT.location,
+      details:  EVENT.description,
+    });
+    window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank");
+  }
+};
 
 // ─── CUSTOM MODAL ─────────────────────────────
 function showModal(title, body, eyebrow) {
@@ -110,6 +156,17 @@ function showModal(title, body, eyebrow) {
 const RSVP_DEADLINE   = new Date("2026-04-20T23:59:59-04:00");
 const MAX_IN_PERSON   = 10;
 const PARIS_PHONE     = "+16165660701";
+
+// ─── EVENT CONFIG ─────────────────────────────
+const EVENT = {
+  title:       "Paris's UMSI Graduation",
+  location:    "Crisler Center, 333 E Stadium Blvd, Ann Arbor, MI 48109",
+  description: "UMSI Commencement 2026 — University of Michigan School of Information",
+  startUTC:    "20260430T140000Z", // 10:00 AM EDT = 14:00 UTC
+  endUTC:      "20260430T160000Z", // 12:00 PM EDT = 16:00 UTC
+  startLocal:  "20260430T100000",
+  endLocal:    "20260430T120000",
+};
 
 function showLockStatus() {
   const statusWrap = document.getElementById("rsvp-lock-status-wrap");
@@ -309,11 +366,22 @@ function showRsvpConfirmed(status) {
 
   document.getElementById("rsvp-success-msg").textContent = msgs[status] || "";
 
+  // Show message section for confirmed and virtual guests
+  const msgSection = document.getElementById("rsvp-message-section");
+  if (msgSection && (status === "confirmed" || status === "virtual")) {
+    msgSection.classList.remove("hidden");
+    if (currentGuest.rsvpMessage) {
+      document.getElementById("rsvp-msg-form").classList.add("hidden");
+      const successEl = document.getElementById("rsvp-msg-success");
+      successEl.textContent = `Your message: "${currentGuest.rsvpMessage}" 💙`;
+      successEl.classList.remove("hidden");
+    }
+  }
+
   // Show child section only for in-person confirmed guests
   const childSection = document.getElementById("child-section");
   if (status === "confirmed" && !isDeadlinePassed()) {
     childSection.classList.remove("hidden");
-    // If child already linked, show confirmed state
     if (currentGuest.linkedChild) {
       document.getElementById("child-form").classList.add("hidden");
       document.getElementById("child-confirmed").classList.remove("hidden");
@@ -324,6 +392,25 @@ function showRsvpConfirmed(status) {
     childSection.classList.add("hidden");
   }
 }
+
+// ─── RSVP MESSAGE ─────────────────────────────
+window.submitRsvpMessage = async function() {
+  const msg   = document.getElementById("rsvp-msg-input").value.trim();
+  const errEl = document.getElementById("rsvp-msg-error");
+  if (!msg) { errEl.textContent = "Please write something first!"; errEl.classList.remove("hidden"); return; }
+  errEl.classList.add("hidden");
+  try {
+    await updateDoc(doc(db, "guests", currentGuest.code), { rsvpMessage: msg });
+    currentGuest.rsvpMessage = msg;
+    document.getElementById("rsvp-msg-form").classList.add("hidden");
+    const successEl = document.getElementById("rsvp-msg-success");
+    successEl.textContent = `Your message: "${msg}" 💙`;
+    successEl.classList.remove("hidden");
+  } catch (err) {
+    errEl.textContent = "Something went wrong. Please try again.";
+    errEl.classList.remove("hidden");
+  }
+};
 
 // ─── CHILD AGE WATCHER ────────────────────────
 document.getElementById("child-age")?.addEventListener("input", function() {
@@ -578,7 +665,8 @@ let allPhotoUrls = [];
 let lightboxIndex = 0;
 
 async function loadPhotos() {
-  const grid = document.getElementById("photo-grid");
+  const grid     = document.getElementById("photo-grid");
+  const emptyEl  = document.getElementById("photos-empty");
   grid.innerHTML = "";
   allPhotoUrls = [];
   try {
@@ -589,10 +677,33 @@ async function loadPhotos() {
       appendPhoto(url, allPhotoUrls.length - 1);
     });
     const dlBtn = document.getElementById("download-all-btn");
-    if (allPhotoUrls.length > 0) dlBtn.classList.remove("hidden");
-    else dlBtn.classList.add("hidden");
+    if (allPhotoUrls.length > 0) {
+      dlBtn.classList.remove("hidden");
+      if (emptyEl) emptyEl.style.display = "none";
+    } else {
+      dlBtn.classList.add("hidden");
+      if (emptyEl) emptyEl.style.display = "block";
+    }
   } catch (err) {
     console.error("Failed to load photos:", err);
+  }
+}
+
+// ─── WEATHER ────────────────────────────────── UPDATE THIS AS THE DATE APPROACHES TO SHOW GRADUATION DAY FORECAST
+async function loadWeather() {
+  try {
+    const res  = await fetch("https://api.open-meteo.com/v1/forecast?latitude=42.2808&longitude=-83.7430&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FNew_York&start_date=2026-04-25&end_date=2026-04-25");
+    const data = await res.json();
+    const max  = Math.round(data.daily.temperature_2m_max[0]);
+    const min  = Math.round(data.daily.temperature_2m_min[0]);
+    const code = data.daily.weathercode[0];
+    const icons = { 0:"☀️", 1:"🌤️", 2:"⛅", 3:"☁️", 45:"🌫️", 48:"🌫️", 51:"🌦️", 53:"🌦️", 55:"🌧️", 61:"🌧️", 63:"🌧️", 65:"🌧️", 71:"🌨️", 73:"🌨️", 75:"❄️", 80:"🌦️", 81:"🌧️", 82:"⛈️", 95:"⛈️" };
+    const descs = { 0:"Clear skies", 1:"Mostly clear", 2:"Partly cloudy", 3:"Overcast", 45:"Foggy", 48:"Foggy", 51:"Light drizzle", 53:"Drizzle", 55:"Heavy drizzle", 61:"Light rain", 63:"Rain", 65:"Heavy rain", 71:"Light snow", 73:"Snow", 75:"Heavy snow", 80:"Showers", 81:"Rain showers", 82:"Heavy showers", 95:"Thunderstorm" };
+    document.getElementById("weather-icon").textContent = icons[code] || "🌡️";
+    document.getElementById("weather-temp").textContent = `${max}°F / ${min}°F`;
+    document.getElementById("weather-desc").textContent = descs[code] || "Check forecast";
+  } catch {
+    document.getElementById("weather-temp").textContent = "Forecast unavailable";
   }
 }
 
@@ -668,6 +779,13 @@ window.downloadAllPhotos = async function() {
 
   btn.textContent = "↓ Download all";
   btn.disabled = false;
+};
+
+// ─── LOGOUT ───────────────────────────────────
+window.logout = function() {
+  sessionStorage.removeItem("guestCode");
+  sessionStorage.removeItem("guestData");
+  window.location.reload();
 };
 
 // ─── SESSION RESTORE ─────────────────────────
