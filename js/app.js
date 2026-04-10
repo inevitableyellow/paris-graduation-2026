@@ -65,6 +65,7 @@ window.verifyInvite = async function() {
 
     currentGuest = { code, ...snap.data() };
     sessionStorage.setItem("guestCode", code);
+    sessionStorage.setItem("guestData", JSON.stringify(currentGuest));
     errorEl.classList.add("hidden");
     document.getElementById("login-screen").classList.add("hidden");
     document.getElementById("main-screen").classList.remove("hidden");

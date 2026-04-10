@@ -209,6 +209,23 @@
   let guestName = "";
 
   // ─── GATE ─────────────────────────────────────
+  // Check if guest already logged in via main site
+  function showAboutPage(name) {
+    guestName = name || "";
+    if (guestName) document.getElementById("note-author").value = guestName;
+    document.getElementById("gate-screen").classList.add("hidden");
+    document.getElementById("about-page").classList.remove("hidden");
+    loadNotes();
+  }
+
+  const savedSession = sessionStorage.getItem("guestData");
+  if (savedSession) {
+    try {
+      const saved = JSON.parse(savedSession);
+      showAboutPage(saved.name || "");
+    } catch {}
+  }
+
   window.verifyGate = async function() {
     const code = document.getElementById("gate-input").value.trim().toUpperCase();
     const errEl = document.getElementById("gate-error");
@@ -217,11 +234,9 @@
     try {
       const snap = await getDoc(doc(db, "guests", code));
       if (!snap.exists()) { errEl.textContent = "That code doesn't match our guest list."; errEl.classList.remove("hidden"); return; }
-      guestName = snap.data().name || "";
-      if (guestName) document.getElementById("note-author").value = guestName;
-      document.getElementById("gate-screen").classList.add("hidden");
-      document.getElementById("about-page").classList.remove("hidden");
-      loadNotes();
+      const data = snap.data();
+      sessionStorage.setItem("guestData", JSON.stringify({ code, ...data }));
+      showAboutPage(data.name || "");
     } catch { errEl.textContent = "Something went wrong. Please try again."; errEl.classList.remove("hidden"); }
   };
 
