@@ -143,7 +143,7 @@
                 <div style="font-size:12px;color:var(--text-muted);" id="weather-desc"></div>
               </div>
             </div>
-            <button onclick="addToCalendar()"
+            <button onclick="openCalendarChooser()"
                style="flex:1;min-width:140px;background:rgba(255,203,5,0.08);border:0.5px solid var(--border);border-radius:var(--radius-sm);padding:0.75rem;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.15s;width:100%;"
                onmouseover="this.style.background='rgba(255,203,5,0.14)'" onmouseout="this.style.background='rgba(255,203,5,0.08)'">
               <div style="font-size:24px;">📅</div>
@@ -152,6 +152,30 @@
                 <div style="font-size:13px;color:var(--white);">April 30, 2026</div>
               </div>
             </button>
+
+          <!-- CALENDAR CHOOSER MODAL -->
+          <div id="calendar-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;">
+            <div style="background:#001a36;border:0.5px solid rgba(255,203,5,0.3);border-radius:var(--radius);padding:1.75rem 1.5rem;max-width:320px;width:100%;">
+              <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.6rem;">Add to calendar</div>
+              <div style="font-family:var(--font-display);font-size:20px;color:var(--white);margin-bottom:0.25rem;">Paris's Graduation</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">Thursday, April 30 · 10:00 AM – 12:00 PM</div>
+              <div style="display:flex;flex-direction:column;gap:10px;">
+                <a id="cal-google" href="#" target="_blank" onclick="closeCalendarModal()" style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--maize);color:var(--navy-dark);border-radius:var(--radius-sm);text-decoration:none;font-family:var(--font-body);font-size:14px;font-weight:500;">
+                  <span style="font-size:18px;">📅</span> Google Calendar
+                </a>
+                <a id="cal-apple" href="#" onclick="closeCalendarModal()" style="display:flex;align-items:center;gap:12px;padding:12px;background:transparent;color:var(--maize);border:0.5px solid var(--maize);border-radius:var(--radius-sm);text-decoration:none;font-family:var(--font-body);font-size:14px;font-weight:500;">
+                  <span style="font-size:18px;">🍎</span> Apple Calendar
+                </a>
+                <a id="cal-outlook" href="#" target="_blank" onclick="closeCalendarModal()" style="display:flex;align-items:center;gap:12px;padding:12px;background:transparent;color:var(--maize);border:0.5px solid var(--maize);border-radius:var(--radius-sm);text-decoration:none;font-family:var(--font-body);font-size:14px;font-weight:500;">
+                  <span style="font-size:18px;">📧</span> Outlook
+                </a>
+                <a id="cal-ics" href="#" download="paris-graduation.ics" onclick="closeCalendarModal()" style="display:flex;align-items:center;gap:12px;padding:12px;background:transparent;color:var(--text-muted);border:0.5px solid rgba(255,255,255,0.15);border-radius:var(--radius-sm);text-decoration:none;font-family:var(--font-body);font-size:14px;">
+                  <span style="font-size:18px;">⬇️</span> Download .ics
+                </a>
+                <button onclick="closeCalendarModal()" style="padding:10px;background:transparent;color:var(--text-muted);border:none;font-family:var(--font-body);font-size:13px;cursor:pointer;">Cancel</button>
+              </div>
+            </div>
+          </div>
           </div>
         </div>
 

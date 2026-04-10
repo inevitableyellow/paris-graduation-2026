@@ -95,43 +95,60 @@ document.getElementById("invite-input").addEventListener("keydown", e => {
   if (e.key === "Enter") window.verifyInvite();
 });
 
-// ─── ADD TO CALENDAR ──────────────────────────
-window.addToCalendar = function() {
-  const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isMac     = /macintosh/i.test(navigator.userAgent) && !window.MSStream;
-  const isAndroid = /android/i.test(navigator.userAgent);
+// ─── CALENDAR CHOOSER ─────────────────────────
+window.openCalendarChooser = function() {
+  // Build URLs from EVENT config
+  const googleParams = new URLSearchParams({
+    action:   "TEMPLATE",
+    text:     EVENT.title,
+    dates:    `${EVENT.startUTC}/${EVENT.endUTC}`,
+    location: EVENT.location,
+    details:  EVENT.description,
+  });
+  document.getElementById("cal-google").href = `https://calendar.google.com/calendar/render?${googleParams}`;
 
-  if (isIOS || isMac) {
-    // Apple Calendar via .ics
-    const ics = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "BEGIN:VEVENT",
-      `DTSTART:${EVENT.startUTC}`,
-      `DTEND:${EVENT.endUTC}`,
-      `SUMMARY:${EVENT.title}`,
-      `LOCATION:${EVENT.location}`,
-      `DESCRIPTION:${EVENT.description}`,
-      "END:VEVENT",
-      "END:VCALENDAR"
-    ].join("\n");
-    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href = url; a.download = "paris-graduation.ics"; a.click();
-    URL.revokeObjectURL(url);
-  } else {
-    // Google Calendar
-    const params = new URLSearchParams({
-      action:   "TEMPLATE",
-      text:     EVENT.title,
-      dates:    `${EVENT.startUTC}/${EVENT.endUTC}`,
-      location: EVENT.location,
-      details:  EVENT.description,
-    });
-    window.open(`https://calendar.google.com/calendar/render?${params}`, "_blank");
-  }
+  // Outlook web
+  const outlookParams = new URLSearchParams({
+    path:      "/calendar/action/compose",
+    rru:       "addevent",
+    subject:   EVENT.title,
+    startdt:   `2026-04-30T10:00:00`,
+    enddt:     `2026-04-30T12:00:00`,
+    location:  EVENT.location,
+    body:      EVENT.description,
+  });
+  document.getElementById("cal-outlook").href = `https://outlook.live.com/calendar/0/deeplink/compose?${outlookParams}`;
+
+  // Apple / .ics download
+  const ics = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "BEGIN:VEVENT",
+    `DTSTART:${EVENT.startUTC}`,
+    `DTEND:${EVENT.endUTC}`,
+    `SUMMARY:${EVENT.title}`,
+    `LOCATION:${EVENT.location}`,
+    `DESCRIPTION:${EVENT.description}`,
+    "END:VEVENT",
+    "END:VCALENDAR"
+  ].join("\n");
+  const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+  const icsUrl = URL.createObjectURL(blob);
+  document.getElementById("cal-apple").href = icsUrl;
+  document.getElementById("cal-ics").href   = icsUrl;
+
+  document.getElementById("calendar-modal").style.display = "flex";
+  document.body.style.overflow = "hidden";
 };
+
+window.closeCalendarModal = function() {
+  document.getElementById("calendar-modal").style.display = "none";
+  document.body.style.overflow = "";
+};
+
+document.getElementById("calendar-modal")?.addEventListener("click", function(e) {
+  if (e.target === this) window.closeCalendarModal();
+});
 
 // ─── CUSTOM MODAL ─────────────────────────────
 function showModal(title, body, eyebrow) {
@@ -689,7 +706,7 @@ async function loadPhotos() {
   }
 }
 
-// ─── WEATHER ────────────────────────────────── UPDATE THIS AS THE DATE APPROACHES TO SHOW GRADUATION DAY FORECAST
+// ─── WEATHER ──────────────────────────────────
 async function loadWeather() {
   try {
     const res  = await fetch("https://api.open-meteo.com/v1/forecast?latitude=42.2808&longitude=-83.7430&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FNew_York&start_date=2026-04-25&end_date=2026-04-25");
