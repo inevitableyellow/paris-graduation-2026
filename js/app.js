@@ -87,7 +87,26 @@ document.getElementById("invite-input").addEventListener("keydown", e => {
   if (e.key === "Enter") window.verifyInvite();
 });
 
-// ─── RSVP CONFIG ──────────────────────────────
+// ─── CUSTOM MODAL ─────────────────────────────
+function showModal(title, body, eyebrow) {
+  return new Promise(resolve => {
+    const modal = document.getElementById("confirm-modal");
+    document.getElementById("modal-title").textContent = title;
+    document.getElementById("modal-body").textContent  = body;
+    if (eyebrow) document.getElementById("modal-eyebrow").textContent = eyebrow;
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+
+    const close = (result) => {
+      modal.style.display = "none";
+      document.body.style.overflow = "";
+      resolve(result);
+    };
+
+    document.getElementById("modal-confirm-btn").onclick = () => close(true);
+    document.getElementById("modal-cancel-btn").onclick  = () => close(false);
+  });
+}
 const RSVP_DEADLINE   = new Date("2026-04-20T23:59:59-04:00");
 const MAX_IN_PERSON   = 10;
 
@@ -151,7 +170,11 @@ window.submitRsvp = async function() {
 
   // Warn before submitting virtual — this is permanent
   if (status === "virtual" && !currentGuest.everWasVirtual) {
-    const confirmed = window.confirm("Are you sure you want to attend virtually? Once confirmed, you will not be able to change to in-person attendance without contacting Paris directly. Your ticket will be released to other guests.");
+    const confirmed = await showModal(
+      "Attending virtually?",
+      "Once confirmed, you will not be able to change to in-person attendance without contacting Paris directly. Your ticket will be released to other guests.",
+      "Please read carefully"
+    );
     if (!confirmed) return;
   }
 
