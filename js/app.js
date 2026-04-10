@@ -597,9 +597,10 @@ window.downloadAllPhotos = async function() {
 };
 
 // ─── SESSION RESTORE ─────────────────────────
-// Restore session if user refreshes the page
 const savedCode = sessionStorage.getItem("guestCode");
 if (savedCode) {
   document.getElementById("invite-input").value = savedCode;
   window.verifyInvite();
+} else {
+  document.getElementById("login-screen").style.display = "block";
 }
