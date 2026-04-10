@@ -1,1 +1,9 @@
 cors.json
+node_modules
+node_modules/
+src/
+.vite/
+package.json
+package-lock.json
+vite.config.js
+.DS_Store
