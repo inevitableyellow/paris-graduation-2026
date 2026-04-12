@@ -709,7 +709,7 @@ async function loadPhotos() {
 // ─── WEATHER ──────────────────────────────────
 async function loadWeather() {
   try {
-    const res  = await fetch("https://api.open-meteo.com/v1/forecast?latitude=42.2808&longitude=-83.7430&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FNew_York&start_date=2026-04-25&end_date=2026-04-25");
+    const res  = await fetch("https://api.open-meteo.com/v1/forecast?latitude=42.2808&longitude=-83.7430&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FNew_York&start_date=2026-04-27&end_date=2026-04-27");
     const data = await res.json();
     const max  = Math.round(data.daily.temperature_2m_max[0]);
     const min  = Math.round(data.daily.temperature_2m_min[0]);
