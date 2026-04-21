@@ -9,11 +9,85 @@ import {
 // ─── STATE ───────────────────────────────────
 let currentGuest = null; // { code, name, status, ticketId, ticketReleased }
 
-// ─── COUNTDOWN ───────────────────────────────
-const gradDate = new Date("2026-04-30T10:00:00-04:00");
+// ─── CEREMONY CONFIG ─────────────────────────
+const CEREMONIES = {
+  april30: {
+    date:            new Date("2026-04-30T10:00:00-04:00"),
+    loginSub:        "April 30, 2026 · Ann Arbor, Michigan",
+    meta:            "Thursday, April 30 · 10:00 AM – 12:00 PM EDT",
+    venueName:       "Crisler Center",
+    venueShort:      "Crisler Center, Ann Arbor",
+    address:         "Crisler Center, 333 E Stadium Blvd, Ann Arbor, MI 48109",
+    addressShort:    "333 E Stadium Blvd, Ann Arbor, MI",
+    mapSrc:          "https://www.openstreetmap.org/export/embed.html?bbox=-83.75663280487062%2C42.260191605214274%2C-83.73706340789796%2C42.27238687338081&layer=mapnik",
+    mapsApple:       "https://maps.apple.com/?address=333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109&q=Crisler+Center&dirflg=d",
+    mapsGoogle:      "https://www.google.com/maps/dir/?api=1&destination=Crisler+Center,+333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109",
+    calBtnLabel:     "April 30, 2026",
+    calModalSub:     "Thursday, April 30 · 10:00 AM – 12:00 PM",
+    calStartUTC:     "20260430T140000Z",
+    calEndUTC:       "20260430T160000Z",
+    livestreamHref:  "https://umsi.info/gradlive",
+    livestreamText:  "Watch the livestream → umsi.info/gradlive",
+    ticketDate:      "Thursday, April 30, 2026",
+    dinnerTime:      "3:15 PM",
+    dinnerAddress:   "Aventura, 303 Detroit St, Ann Arbor, MI 48104",
+    dinnerVenue:     "Aventura",
+    dinnerShort:     "303 Detroit St, Ann Arbor, MI",
+    dinnerMenuHref:  "https://www.aventuraannarbor.com/menu",
+    dinnerApple:     "https://maps.apple.com/?address=303+Detroit+St,+Ann+Arbor,+MI+48104&q=Aventura&dirflg=d",
+    dinnerGoogle:    "https://www.google.com/maps/dir/?api=1&destination=Aventura,+303+Detroit+St,+Ann+Arbor,+MI+48104",
+    dresscode:       "Smart casual is a safe bet, but honestly, wear whatever makes you feel your best! It's a celebration! 🎉 Keep in mind that Crisler Center can vary in temperature depending on where you're sitting, so layers are your friend. And since it's April in Ann Arbor, a light jacket for outdoors is always a good idea.",
+    parking:         `Free parking is available in the Blue Lot surrounding Crisler Center (lots SC4, SC5, SC6, SC7), with entrances on Stadium Boulevard and East Keech Avenue / Greene Street.<br><br>ADA parking is available outside the Northeast entrance on a first-come, first-served basis — a state-issued disability placard is required.<br><br>Note: University parking permits are not valid for this event. Please leave bags in your vehicle as Crisler Center has a strict no-bag policy.<br><br><a href="https://mgoblue.com/documents/2022/9/28/20220928-gen-crisler-center-parking-non-basketball.pdf" target="_blank" style="color:var(--maize);text-decoration:none;border-bottom:0.5px solid rgba(255,203,5,0.3);">View parking map (PDF) →</a>`,
+    prohibitedLabel: "Prohibited items at Crisler Center",
+    prohibited:      `The following are strictly prohibited inside all U-M commencement venues:<ul style="margin-top:0.6rem;padding-left:1.25rem;color:var(--text-muted);font-size:13px;display:flex;flex-direction:column;gap:3px;"><li>All bags (including backpacks and purses)</li><li>Aerosol and spray cans</li><li>Containers of any kind (coolers, thermoses, cups, bottles, cans, flasks)</li><li>Animals (except service animals)</li><li>Signs and flags with or without flagpoles</li><li>Food of any kind</li><li>Alcoholic beverages</li><li>Noisemakers (whistles, air horns, vuvuzelas, etc.)</li><li>Strollers</li><li>Video cameras, tripods, selfie sticks, cameras with lens longer than 6 inches</li><li>Weapons</li><li>Cigarettes, vapes, e-cigarettes, and all smoking devices</li></ul>`,
+    weatherLat:      42.2808,
+    weatherLng:      -83.7430,
+    weatherDate:     "2026-04-30",
+    weatherCity:     "Ann Arbor",
+  },
+  may2: {
+    date:            new Date("2026-05-02T10:00:00-04:00"),
+    loginSub:        "May 2, 2026 · Ann Arbor, Michigan",
+    meta:            "Saturday, May 2 · 10:00 AM – 12:00 PM EDT",
+    venueName:       "Michigan Stadium",
+    venueShort:      "Michigan Stadium, Ann Arbor",
+    address:         "Michigan Stadium, 1201 S Main St, Ann Arbor, MI 48104",
+    addressShort:    "1201 S Main St, Ann Arbor, MI",
+    mapSrc:          "https://www.openstreetmap.org/export/embed.html?bbox=-83.75018775463105%2C42.26538185561386%2C-83.73061835765839%2C42.27757433456714&layer=mapnik",
+    mapsApple:       "https://maps.apple.com/?address=1201+S+Main+St,+Ann+Arbor,+MI+48104&q=Michigan+Stadium&dirflg=d",
+    mapsGoogle:      "https://www.google.com/maps/dir/?api=1&destination=Michigan+Stadium,+1201+S+Main+St,+Ann+Arbor,+MI+48104",
+    calBtnLabel:     "May 2, 2026",
+    calModalSub:     "Saturday, May 2 · 10:00 AM – 12:00 PM",
+    calStartUTC:     "20260502T140000Z",
+    calEndUTC:       "20260502T160000Z",
+    livestreamHref:  "https://commencement.umich.edu",
+    livestreamText:  "Watch the livestream → commencement.umich.edu",
+    ticketDate:      "Saturday, May 2, 2026",
+    dinnerTime:      "3:45 PM",
+    dinnerAddress:   "Bellflower, 209 Pearl St, Ypsilanti, MI 48197",
+    dinnerVenue:     "Bellflower",
+    dinnerShort:     "209 Pearl St, Ypsilanti, MI",
+    dinnerMenuHref:  "https://bellflowerypsi.com/dinner/",
+    dinnerApple:     "https://maps.apple.com/?address=209+Pearl+St,+Ypsilanti,+MI+48197&q=Bellflower&dirflg=d",
+    dinnerGoogle:    "https://www.google.com/maps/dir/?api=1&destination=Bellflower,+209+Pearl+St,+Ypsilanti,+MI+48197",
+    dresscode:       "This ceremony is outdoors at Michigan Stadium, so please dress for the weather! Smart casual is always a safe bet, but layers are your friend for a May morning in Ann Arbor. A light jacket is strongly recommended.",
+    parking:         `There is no open public parking at Michigan Stadium. Guests are encouraged to use the <strong style="color:var(--white);">complimentary shuttle service</strong> running from campus lots and area hotels.<br><br>Shuttle to stadium: <strong style="color:var(--white);">7:30 AM – 11:00 AM.</strong> Return shuttles from stadium: <strong style="color:var(--white);">12:00 PM – 1:30 PM.</strong> All buses are wheelchair-accessible. Expect 10–30 min waits at peak times.<br><br>Campus parking structures (Thayer, Fletcher, Hill, Thompson, Palmer-Blue Area) open at 9:00 AM with suspended enforcement. Surface lots on Central, North, and South Campuses are also available.<br><br>ADA parking is available on the north side of the stadium for vehicles with state-issued disability plates or tags.<br><br><a href="https://commencement.umich.edu/ceremony-venue-details/spring-commencement/travel-parkingsc/" target="_blank" style="color:var(--maize);text-decoration:none;border-bottom:0.5px solid rgba(255,203,5,0.3);">Full parking & shuttle info →</a>`,
+    prohibitedLabel: "Prohibited items at Michigan Stadium",
+    prohibited:      `The following are strictly prohibited at Michigan Stadium:<ul style="margin-top:0.6rem;padding-left:1.25rem;color:var(--text-muted);font-size:13px;display:flex;flex-direction:column;gap:3px;"><li>No purses, bags, wristlets, or cases of any size (medical exceptions only — permitted items must be in a clear plastic quart- or gallon-size bag)</li><li>Strollers</li><li>Outside food or beverages (concession stands open, cashless only)</li><li>Alcoholic beverages</li><li>Animals (except service animals)</li><li>Signs, flags, and banners</li><li>Noisemakers</li><li>Weapons of any kind</li><li>Cigarettes, vapes, and all smoking devices</li></ul><br>Enter through Gates 2, 4, 8, 9, or 10. Stadium opens at <strong style="color:var(--white);">8:00 AM</strong> — be seated by <strong style="color:var(--white);">8:30 AM</strong> to see the graduate procession.`,
+    weatherLat:      42.2808,
+    weatherLng:      -83.7430,
+    weatherDate:     "2026-05-02",
+    weatherCity:     "Ann Arbor",
+  },
+};
 
+function getCeremony() {
+  return CEREMONIES[currentGuest?.ceremony] || CEREMONIES.april30;
+}
+
+// ─── COUNTDOWN ───────────────────────────────
 function updateCountdown() {
-  const diff = gradDate - new Date();
+  const diff = getCeremony().date - new Date();
   if (diff <= 0) {
     document.getElementById("countdown").innerHTML =
       '<div style="color:var(--maize);font-family:var(--font-display);font-size:22px;font-style:italic;">Today is the day!</div>';
@@ -30,6 +104,62 @@ function updateCountdown() {
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
+
+// ─── RENDER INFO TAB ─────────────────────────
+function renderInfoTab() {
+  const c = getCeremony();
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const setHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+  const setAttr = (id, attr, val) => { const el = document.getElementById(id); if (el) el.setAttribute(attr, val); };
+
+  // Login screen
+  set("login-sub", c.loginSub);
+
+  // Ceremony block
+  set("info-meta", c.meta);
+  set("info-address", c.address);
+  setAttr("info-map-iframe", "src", c.mapSrc);
+
+  // Maps modal
+  set("maps-modal-venue", c.venueName);
+  set("maps-modal-address", c.addressShort);
+  setAttr("maps-apple", "href", c.mapsApple);
+  setAttr("maps-google", "href", c.mapsGoogle);
+
+  // Livestream
+  const ls = document.getElementById("info-livestream");
+  if (ls) { ls.href = c.livestreamHref; ls.textContent = c.livestreamText; }
+
+  // Calendar button + modal
+  set("cal-btn-label", c.calBtnLabel);
+  set("cal-modal-subtitle", c.calModalSub);
+
+  // Schedule timeline
+  set("tl-venue-start", c.venueName);
+  set("tl-dinner-time", c.dinnerTime);
+  set("tl-dinner-address", c.dinnerAddress);
+  const dinnerMenu = document.getElementById("tl-dinner-menu");
+  if (dinnerMenu) dinnerMenu.href = c.dinnerMenuHref;
+
+  // Dinner maps modal
+  set("dinner-modal-venue", c.dinnerVenue);
+  set("dinner-modal-address", c.dinnerShort);
+  setAttr("dinner-maps-apple", "href", c.dinnerApple);
+  setAttr("dinner-maps-google", "href", c.dinnerGoogle);
+
+  // Info cards
+  setHTML("info-parking", c.parking);
+  set("info-dresscode", c.dresscode);
+  set("info-prohibited-label", c.prohibitedLabel);
+  setHTML("info-prohibited", c.prohibited);
+
+  // Ticket tab
+  set("ticket-date-display", c.ticketDate);
+  set("ticket-venue-display", c.venueShort);
+  set("child-ticket-date-display", c.ticketDate);
+  set("child-ticket-venue-display", c.venueShort);
+}
+
 
 // ─── TAB SWITCHING ────────────────────────────
 window.switchTab = function(tab) {
@@ -71,6 +201,10 @@ window.verifyInvite = async function() {
     document.getElementById("login-screen").classList.add("hidden");
     document.getElementById("main-screen").classList.remove("hidden");
 
+    // Populate all ceremony-specific content
+    renderInfoTab();
+    updateCountdown();
+
     // Load weather for graduation day
     loadWeather();
 
@@ -97,37 +231,35 @@ document.getElementById("invite-input").addEventListener("keydown", e => {
 
 // ─── CALENDAR CHOOSER ─────────────────────────
 window.openCalendarChooser = function() {
-  // Build URLs from EVENT config
+  const c = getCeremony();
   const googleParams = new URLSearchParams({
     action:   "TEMPLATE",
     text:     EVENT.title,
-    dates:    `${EVENT.startUTC}/${EVENT.endUTC}`,
-    location: EVENT.location,
+    dates:    `${c.calStartUTC}/${c.calEndUTC}`,
+    location: c.address,
     details:  EVENT.description,
   });
   document.getElementById("cal-google").href = `https://calendar.google.com/calendar/render?${googleParams}`;
 
-  // Outlook web
   const outlookParams = new URLSearchParams({
     path:      "/calendar/action/compose",
     rru:       "addevent",
     subject:   EVENT.title,
-    startdt:   `2026-04-30T10:00:00`,
-    enddt:     `2026-04-30T12:00:00`,
-    location:  EVENT.location,
+    startdt:   c.calStartUTC.replace("Z", "").replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, "$1-$2-$3T$4:$5:$6"),
+    enddt:     c.calEndUTC.replace("Z", "").replace(/(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})/, "$1-$2-$3T$4:$5:$6"),
+    location:  c.address,
     body:      EVENT.description,
   });
   document.getElementById("cal-outlook").href = `https://outlook.live.com/calendar/0/deeplink/compose?${outlookParams}`;
 
-  // Apple / .ics download
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
     "BEGIN:VEVENT",
-    `DTSTART:${EVENT.startUTC}`,
-    `DTEND:${EVENT.endUTC}`,
+    `DTSTART:${c.calStartUTC}`,
+    `DTEND:${c.calEndUTC}`,
     `SUMMARY:${EVENT.title}`,
-    `LOCATION:${EVENT.location}`,
+    `LOCATION:${c.address}`,
     `DESCRIPTION:${EVENT.description}`,
     "END:VEVENT",
     "END:VCALENDAR"
@@ -177,12 +309,7 @@ const PARIS_PHONE     = "+16165660701";
 // ─── EVENT CONFIG ─────────────────────────────
 const EVENT = {
   title:       "Paris's UMSI Graduation",
-  location:    "Crisler Center, 333 E Stadium Blvd, Ann Arbor, MI 48109",
   description: "UMSI Commencement 2026 — University of Michigan School of Information",
-  startUTC:    "20260430T140000Z", // 10:00 AM EDT = 14:00 UTC
-  endUTC:      "20260430T160000Z", // 12:00 PM EDT = 16:00 UTC
-  startLocal:  "20260430T100000",
-  endLocal:    "20260430T120000",
 };
 
 function showLockStatus() {
@@ -708,14 +835,19 @@ async function loadPhotos() {
 
 // ─── WEATHER ──────────────────────────────────
 async function loadWeather() {
+  const c = getCeremony();
+  const { weatherLat, weatherLng, weatherDate, weatherCity } = c;
   try {
-    const res  = await fetch("https://api.open-meteo.com/v1/forecast?latitude=42.2808&longitude=-83.7430&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FNew_York&start_date=2026-04-27&end_date=2026-04-27");
+    const res  = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${weatherLat}&longitude=${weatherLng}&daily=temperature_2m_max,temperature_2m_min,weathercode&temperature_unit=fahrenheit&timezone=America%2FNew_York&start_date=${weatherDate}&end_date=${weatherDate}`);
     const data = await res.json();
     const max  = Math.round(data.daily.temperature_2m_max[0]);
     const min  = Math.round(data.daily.temperature_2m_min[0]);
     const code = data.daily.weathercode[0];
     const icons = { 0:"☀️", 1:"🌤️", 2:"⛅", 3:"☁️", 45:"🌫️", 48:"🌫️", 51:"🌦️", 53:"🌦️", 55:"🌧️", 61:"🌧️", 63:"🌧️", 65:"🌧️", 71:"🌨️", 73:"🌨️", 75:"❄️", 80:"🌦️", 81:"🌧️", 82:"⛈️", 95:"⛈️" };
     const descs = { 0:"Clear skies", 1:"Mostly clear", 2:"Partly cloudy", 3:"Overcast", 45:"Foggy", 48:"Foggy", 51:"Light drizzle", 53:"Drizzle", 55:"Heavy drizzle", 61:"Light rain", 63:"Rain", 65:"Heavy rain", 71:"Light snow", 73:"Snow", 75:"Heavy snow", 80:"Showers", 81:"Rain showers", 82:"Heavy showers", 95:"Thunderstorm" };
+    // Update city label in weather widget
+    const cityEl = document.getElementById("weather-city");
+    if (cityEl) cityEl.textContent = weatherCity.toUpperCase();
     document.getElementById("weather-icon").textContent = icons[code] || "🌡️";
     document.getElementById("weather-temp").textContent = `${max}°F / ${min}°F`;
     document.getElementById("weather-desc").textContent = descs[code] || "Check forecast";

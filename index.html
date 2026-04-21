@@ -31,7 +31,7 @@
     <div class="login-card">
       <div class="login-seal">U · M</div>
       <h1 class="login-title">Paris's Graduation</h1>
-      <p class="login-sub">April 30, 2026 · Ann Arbor, Michigan</p>
+      <p class="login-sub" id="login-sub">April 30, 2026 · Ann Arbor, Michigan</p>
       <div class="login-divider"></div>
       <p class="login-prompt">Enter your invite code to continue</p>
       <input id="invite-input" class="invite-input" type="text" placeholder="e.g. GRAD-XXXX" autocomplete="off" spellcheck="false" />
@@ -83,21 +83,22 @@
         <div class="info-block">
           <div class="info-label">Ceremony</div>
           <div class="info-main">UMSI Commencement 2026</div>
-          <div class="info-meta">Thursday, April 30 · 10:00 AM – 12:00 PM EDT</div>
+          <div class="info-meta" id="info-meta">Thursday, April 30 · 10:00 AM – 12:00 PM EDT</div>
           <div class="info-location">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-            Crisler Center, 333 E Stadium Blvd, Ann Arbor, MI 48109
+            <span id="info-address">Crisler Center, 333 E Stadium Blvd, Ann Arbor, MI 48109</span>
           </div>
 
           <!-- CLICKABLE MAP -->
           <div style="margin-top:0.75rem;border-radius:var(--radius-sm);overflow:hidden;border:0.5px solid var(--border-subtle);cursor:pointer;position:relative;" onclick="openMapsChooser()">
             <iframe
+              id="info-map-iframe"
               width="100%"
               height="180"
               src="https://www.openstreetmap.org/export/embed.html?bbox=-83.75663280487062%2C42.260191605214274%2C-83.73706340789796%2C42.27238687338081&layer=mapnik"
               style="border:none;display:block;pointer-events:none;"
               loading="lazy"
-              title="Crisler Center map"
+              title="Venue map"
             ></iframe>
             <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.15);">
               <span style="font-family:var(--font-mono);font-size:12px;color:white;background:rgba(0,39,76,0.85);padding:6px 14px;border-radius:999px;border:0.5px solid rgba(255,203,5,0.4);">Tap to open directions →</span>
@@ -108,11 +109,11 @@
           <div id="maps-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;">
             <div style="background:#001a36;border:0.5px solid rgba(255,203,5,0.3);border-radius:var(--radius);padding:1.75rem 1.5rem;max-width:320px;width:100%;">
               <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.6rem;">Get directions</div>
-              <div style="font-family:var(--font-display);font-size:20px;color:var(--white);margin-bottom:0.25rem;">Crisler Center</div>
-              <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">333 E Stadium Blvd, Ann Arbor, MI</div>
+              <div style="font-family:var(--font-display);font-size:20px;color:var(--white);margin-bottom:0.25rem;" id="maps-modal-venue">Crisler Center</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;" id="maps-modal-address">333 E Stadium Blvd, Ann Arbor, MI</div>
               <div style="display:flex;flex-direction:column;gap:10px;">
-                <a href="https://maps.apple.com/?address=333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109&q=Crisler+Center&dirflg=d" target="_blank" onclick="closeMapsModal()" style="display:block;padding:12px;text-align:center;background:var(--maize);color:var(--navy-dark);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Apple Maps</a>
-                <a href="https://www.google.com/maps/dir/?api=1&destination=Crisler+Center,+333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109" target="_blank" onclick="closeMapsModal()" style="display:block;padding:12px;text-align:center;background:transparent;color:var(--maize);border:0.5px solid var(--maize);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Google Maps</a>
+                <a id="maps-apple" href="https://maps.apple.com/?address=333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109&q=Crisler+Center&dirflg=d" target="_blank" onclick="closeMapsModal()" style="display:block;padding:12px;text-align:center;background:var(--maize);color:var(--navy-dark);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Apple Maps</a>
+                <a id="maps-google" href="https://www.google.com/maps/dir/?api=1&destination=Crisler+Center,+333+E+Stadium+Blvd,+Ann+Arbor,+MI+48109" target="_blank" onclick="closeMapsModal()" style="display:block;padding:12px;text-align:center;background:transparent;color:var(--maize);border:0.5px solid var(--maize);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Google Maps</a>
                 <button onclick="closeMapsModal()" style="padding:10px;background:transparent;color:var(--text-muted);border:none;font-family:var(--font-body);font-size:13px;cursor:pointer;">Cancel</button>
               </div>
             </div>
@@ -131,14 +132,14 @@
             });
           </script>
 
-          <a href="https://umsi.info/gradlive" target="_blank" class="info-link">Watch the livestream → umsi.info/gradlive</a>
+          <a id="info-livestream" href="https://umsi.info/gradlive" target="_blank" class="info-link">Watch the livestream → umsi.info/gradlive</a>
 
           <!-- WEATHER + CALENDAR ROW -->
           <div style="display:flex;gap:10px;margin-top:1rem;flex-wrap:wrap;">
             <div id="weather-widget" style="flex:1;min-width:140px;background:rgba(255,255,255,0.04);border:0.5px solid var(--border-subtle);border-radius:var(--radius-sm);padding:0.75rem;display:flex;align-items:center;gap:10px;">
               <div style="font-size:24px;" id="weather-icon">⏳</div>
               <div>
-                <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:2px;">Ann Arbor</div>
+                <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:2px;" id="weather-city">Ann Arbor</div>
                 <div style="font-size:14px;color:var(--white);" id="weather-temp">Loading...</div>
                 <div style="font-size:12px;color:var(--text-muted);" id="weather-desc"></div>
               </div>
@@ -149,7 +150,7 @@
               <div style="font-size:24px;">📅</div>
               <div style="text-align:left;">
                 <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:2px;">Add to calendar</div>
-                <div style="font-size:13px;color:var(--white);">April 30, 2026</div>
+                <div style="font-size:13px;color:var(--white);" id="cal-btn-label">April 30, 2026</div>
               </div>
             </button>
 
@@ -158,7 +159,7 @@
             <div style="background:#001a36;border:0.5px solid rgba(255,203,5,0.3);border-radius:var(--radius);padding:1.75rem 1.5rem;max-width:320px;width:100%;">
               <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.6rem;">Add to calendar</div>
               <div style="font-family:var(--font-display);font-size:20px;color:var(--white);margin-bottom:0.25rem;">Paris's Graduation</div>
-              <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">Thursday, April 30 · 10:00 AM – 12:00 PM</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;" id="cal-modal-subtitle">Thursday, April 30 · 10:00 AM – 12:00 PM</div>
               <div style="display:flex;flex-direction:column;gap:10px;">
                 <a id="cal-google" href="#" target="_blank" onclick="closeCalendarModal()" style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--maize);color:var(--navy-dark);border-radius:var(--radius-sm);text-decoration:none;font-family:var(--font-body);font-size:14px;font-weight:500;">
                   <span style="font-size:18px;">📅</span> Google Calendar
@@ -186,7 +187,7 @@
             <div class="tl-time">10:00 AM</div>
             <div class="tl-content">
               <div class="tl-name">Ceremony Begins</div>
-              <div class="tl-place">Crisler Center</div>
+              <div class="tl-place" id="tl-venue-start">Crisler Center</div>
             </div>
           </div>
           <div class="tl-item">
@@ -199,14 +200,14 @@
           </div>
           <div class="tl-item">
             <div class="tl-dot"></div>
-            <div class="tl-time">3:15 PM</div>
+            <div class="tl-time" id="tl-dinner-time">3:15 PM</div>
             <div class="tl-content">
               <div class="tl-name">Dinner Reservation</div>
               <div class="tl-place">
-                <span onclick="openDinnerMapsChooser()" style="cursor:pointer;border-bottom:0.5px solid rgba(255,255,255,0.2);">Aventura, 303 Detroit St, Ann Arbor, MI 48104</span>
+                <span id="tl-dinner-address" onclick="openDinnerMapsChooser()" style="cursor:pointer;border-bottom:0.5px solid rgba(255,255,255,0.2);">Aventura, 303 Detroit St, Ann Arbor, MI 48104</span>
               </div>
               <div style="margin-top:4px;">
-                <a href="https://www.aventuraannarbor.com/menu" target="_blank" style="color:var(--maize);text-decoration:none;border-bottom:0.5px solid rgba(255,203,5,0.3);font-size:13px;">View menu →</a>
+                <a id="tl-dinner-menu" href="https://www.aventuraannarbor.com/menu" target="_blank" style="color:var(--maize);text-decoration:none;border-bottom:0.5px solid rgba(255,203,5,0.3);font-size:13px;">View menu →</a>
               </div>
               <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">A deposit has been placed to secure this reservation — we can't wait to celebrate together! 🎉</div>
             </div>
@@ -216,11 +217,11 @@
         <div id="dinner-maps-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;">
           <div style="background:#001a36;border:0.5px solid rgba(255,203,5,0.3);border-radius:var(--radius);padding:1.75rem 1.5rem;max-width:320px;width:100%;">
             <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.6rem;">Get directions</div>
-            <div style="font-family:var(--font-display);font-size:20px;color:var(--white);margin-bottom:0.25rem;">Aventura</div>
-            <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;">303 Detroit St, Ann Arbor, MI</div>
+            <div style="font-family:var(--font-display);font-size:20px;color:var(--white);margin-bottom:0.25rem;" id="dinner-modal-venue">Aventura</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:1.5rem;" id="dinner-modal-address">303 Detroit St, Ann Arbor, MI</div>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <a href="https://maps.apple.com/?address=303+Detroit+St,+Ann+Arbor,+MI+48104&q=Aventura&dirflg=d" target="_blank" onclick="closeDinnerMapsModal()" style="display:block;padding:12px;text-align:center;background:var(--maize);color:var(--navy-dark);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Apple Maps</a>
-              <a href="https://www.google.com/maps/dir/?api=1&destination=Aventura,+303+Detroit+St,+Ann+Arbor,+MI+48104" target="_blank" onclick="closeDinnerMapsModal()" style="display:block;padding:12px;text-align:center;background:transparent;color:var(--maize);border:0.5px solid var(--maize);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Google Maps</a>
+              <a id="dinner-maps-apple" href="https://maps.apple.com/?address=303+Detroit+St,+Ann+Arbor,+MI+48104&q=Aventura&dirflg=d" target="_blank" onclick="closeDinnerMapsModal()" style="display:block;padding:12px;text-align:center;background:var(--maize);color:var(--navy-dark);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Apple Maps</a>
+              <a id="dinner-maps-google" href="https://www.google.com/maps/dir/?api=1&destination=Aventura,+303+Detroit+St,+Ann+Arbor,+MI+48104" target="_blank" onclick="closeDinnerMapsModal()" style="display:block;padding:12px;text-align:center;background:transparent;color:var(--maize);border:0.5px solid var(--maize);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:14px;font-weight:500;text-decoration:none;">Google Maps</a>
               <button onclick="closeDinnerMapsModal()" style="padding:10px;background:transparent;color:var(--text-muted);border:none;font-family:var(--font-body);font-size:13px;cursor:pointer;">Cancel</button>
             </div>
           </div>
@@ -243,7 +244,7 @@
         <div class="info-cards">
           <div class="info-card">
             <div class="ic-label">Parking & transport</div>
-            <div class="ic-body" style="line-height:1.8;">
+            <div class="ic-body" id="info-parking" style="line-height:1.8;">
               Free parking is available in the Blue Lot surrounding Crisler Center (lots SC4, SC5, SC6, SC7), with entrances on Stadium Boulevard and East Keech Avenue / Greene Street.
               <br><br>
               ADA parking is available outside the Northeast entrance on a first-come, first-served basis — a state-issued disability placard is required.
@@ -255,15 +256,15 @@
           </div>
           <div class="info-card">
             <div class="ic-label">Dress code</div>
-            <div class="ic-body">Smart casual is a safe bet, but honestly, wear whatever makes you feel your best! It's a celebration! 🎉 Keep in mind that Crisler Center can vary in temperature depending on where you're sitting, so layers are your friend. And since it's April in Ann Arbor, a light jacket for outdoors is always a good idea. </div>
+            <div class="ic-body" id="info-dresscode">Smart casual is a safe bet, but honestly, wear whatever makes you feel your best! It's a celebration! 🎉 Keep in mind that Crisler Center can vary in temperature depending on where you're sitting, so layers are your friend. And since it's April in Ann Arbor, a light jacket for outdoors is always a good idea.</div>
           </div>
           <div class="info-card">
             <div class="ic-label">Note on tickets</div>
             <div class="ic-body">All graduates and guests require a ticket. Children over 2 years old require their own ticket. Each ticket QR code is unique and single-use.</div>
           </div>
           <div class="info-card">
-            <div class="ic-label">Prohibited items at Crisler Center</div>
-            <div class="ic-body" style="line-height:1.8;">
+            <div class="ic-label" id="info-prohibited-label">Prohibited items at Crisler Center</div>
+            <div class="ic-body" id="info-prohibited" style="line-height:1.8;">
               The following are strictly prohibited inside all U-M commencement venues:
               <ul style="margin-top:0.6rem;padding-left:1.25rem;color:var(--text-muted);font-size:13px;display:flex;flex-direction:column;gap:3px;">
                 <li>All bags (including backpacks and purses)</li>
@@ -416,7 +417,7 @@
           <div class="ticket-details">
             <div class="ticket-detail-row">
               <span class="td-label">Date</span>
-              <span class="td-val">Thursday, April 30, 2026</span>
+              <span class="td-val" id="ticket-date-display">Thursday, April 30, 2026</span>
             </div>
             <div class="ticket-detail-row">
               <span class="td-label">Time</span>
@@ -424,7 +425,7 @@
             </div>
             <div class="ticket-detail-row">
               <span class="td-label">Venue</span>
-              <span class="td-val">Crisler Center, Ann Arbor</span>
+              <span class="td-val" id="ticket-venue-display">Crisler Center, Ann Arbor</span>
             </div>
             <div class="ticket-detail-row">
               <span class="td-label">Ticket ID</span>
@@ -450,7 +451,7 @@
           <div class="ticket-details">
             <div class="ticket-detail-row">
               <span class="td-label">Date</span>
-              <span class="td-val">Thursday, April 30, 2026</span>
+              <span class="td-val" id="child-ticket-date-display">Thursday, April 30, 2026</span>
             </div>
             <div class="ticket-detail-row">
               <span class="td-label">Time</span>
@@ -458,7 +459,7 @@
             </div>
             <div class="ticket-detail-row">
               <span class="td-label">Venue</span>
-              <span class="td-val">Crisler Center, Ann Arbor</span>
+              <span class="td-val" id="child-ticket-venue-display">Crisler Center, Ann Arbor</span>
             </div>
             <div class="ticket-detail-row">
               <span class="td-label">Ticket ID</span>

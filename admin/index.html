@@ -20,9 +20,9 @@
     .admin-header { border-bottom: 1px solid var(--border); padding-bottom: 1.25rem; margin-bottom: 2rem; }
     .admin-header h1 { font-size: 20px; font-weight: 500; color: var(--maize); }
     .admin-header p { font-size: 13px; color: var(--muted); margin-top: 4px; }
-
+ 
     .section-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--maize); opacity: 0.7; margin-bottom: 0.75rem; }
-
+ 
     /* ADD GUEST FORM */
     .add-form { background: var(--subtle); border: 0.5px solid var(--border); border-radius: 10px; padding: 1.25rem; margin-bottom: 2rem; }
     .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
@@ -36,7 +36,7 @@
     .btn-sm-red { background: transparent; color: #f09595; border: 0.5px solid rgba(240,149,149,0.3); border-radius: 6px; padding: 5px 10px; font-family: var(--mono); font-size: 11px; cursor: pointer; }
     .btn-sm-red:hover { background: rgba(240,149,149,0.1); }
     .code-preview { font-family: var(--mono); font-size: 12px; color: var(--maize); background: var(--maize-dim); padding: 6px 10px; border-radius: 6px; display: inline-block; margin-top: 6px; letter-spacing: 0.06em; }
-
+ 
     /* GUEST TABLE */
     .guest-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 2rem; }
     .guest-table th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-align: left; padding: 0 8px 10px; border-bottom: 0.5px solid var(--border); }
@@ -49,18 +49,18 @@
     .b-declined  { background: rgba(226,75,74,0.18);  color: #E24B4A; }
     .b-released  { background: rgba(255,203,5,0.18);  color: var(--maize); }
     .mono-sm { font-family: var(--mono); font-size: 11px; color: var(--muted); }
-
+ 
     /* STATS */
     .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 2rem; }
     .stat { background: var(--subtle); border: 0.5px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
     .stat-num { font-size: 28px; font-weight: 500; color: var(--maize); font-family: var(--mono); }
     .stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
-
+ 
     .msg { font-size: 13px; color: var(--muted); margin-top: 8px; }
     .msg.success { color: #5DCAA5; }
     .msg.error { color: #f09595; }
     .hidden { display: none !important; }
-
+ 
     /* LOGIN */
     #admin-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; text-align: center; }
     #admin-login h2 { font-size: 20px; font-weight: 500; color: var(--maize); }
@@ -78,28 +78,28 @@
       html, body { max-width: 100vw; overflow-x: hidden; }
       body { padding: 1rem 0.875rem; font-size: 14px; }
       .page { max-width: 100%; }
-
+ 
       /* Login */
       #admin-login { padding: 1.5rem 1rem; }
       #admin-login input { width: 100%; max-width: 100%; }
-
+ 
       /* Header */
       .admin-header h1 { font-size: 17px; }
-
+ 
       /* Stats */
       .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .stat-num { font-size: 22px; }
-
+ 
       /* Add guest form */
       .add-form { padding: 1rem; }
       .form-row { flex-direction: column; gap: 8px; }
       .form-row input { width: 100%; min-width: unset; }
       .btn { width: 100%; text-align: center; }
-
+ 
       /* Invite generator */
       .invite-actions { flex-direction: column; }
       .btn-copy, .btn-sms { width: 100%; text-align: center; }
-
+ 
       /* Guest table → cards */
       .guest-table { display: block; overflow: hidden; }
       .guest-table thead { display: none; }
@@ -110,14 +110,14 @@
       .guest-table td[data-label=""]::before { display: none; }
       .btn-outline { font-size: 11px; padding: 5px 10px; }
       .btn-sm-red { font-size: 11px; padding: 5px 10px; }
-
+ 
       /* Photo grid */
       #photo-admin-grid { grid-template-columns: repeat(2, 1fr) !important; }
     }
   </style>
 </head>
 <body>
-
+ 
 <!-- ADMIN LOGIN -->
 <div id="admin-login">
   <h2>Admin Access</h2>
@@ -126,14 +126,14 @@
   <button class="btn" onclick="adminLogin()">Enter →</button>
   <div id="admin-login-err" class="msg error hidden">Incorrect password.</div>
 </div>
-
+ 
 <!-- ADMIN PANEL -->
 <div id="admin-panel" class="page hidden">
   <div class="admin-header">
     <h1>Paris's Graduation · Admin</h1>
     <p>Manage guests, invite codes, and ticket release</p>
   </div>
-
+ 
   <!-- STATS -->
   <div class="section-title">Overview</div>
   <div class="stats">
@@ -142,7 +142,7 @@
     <div class="stat"><div class="stat-num" id="s-pending">–</div><div class="stat-label">Pending</div></div>
     <div class="stat"><div class="stat-num" id="s-tickets">–</div><div class="stat-label">Tickets left</div></div>
   </div>
-
+ 
   <!-- ADD GUEST -->
   <div class="section-title">Add a guest</div>
   <div class="add-form">
@@ -157,8 +157,8 @@
     </div>
     <div id="add-msg" class="msg hidden"></div>
   </div>
-
-
+ 
+ 
   <!-- INVITE LINK GENERATOR -->
   <div class="section-title" style="margin-top:0.5rem;">Invite link generator</div>
   <div class="add-form">
@@ -187,7 +187,7 @@
       </div>
     </div>
   </div>
-
+ 
   <!-- GUEST LIST -->
   <div class="section-title">Guest list</div>
   <table class="guest-table">
@@ -197,6 +197,7 @@
         <th>Relationship</th>
         <th>Code</th>
         <th>Status</th>
+        <th>Ceremony</th>
         <th>Official Ticket</th>
         <th>Release</th>
         <th></th>
@@ -204,38 +205,38 @@
     </thead>
     <tbody id="guest-tbody"></tbody>
   </table>
-
+ 
   <!-- PHOTO MANAGEMENT -->
   <div class="section-title">Photos</div>
   <div id="photo-admin-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No photos uploaded yet.</div>
   <div id="photo-admin-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:2rem;"></div>
-
+ 
   <!-- RSVP MESSAGES -->
   <div class="section-title">RSVP messages</div>
   <div id="rsvp-msgs-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No messages yet.</div>
   <div id="rsvp-msgs-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;"></div>
-
+ 
   <!-- NOTES MANAGEMENT -->
   <div class="section-title">Notes for the future</div>
   <div id="notes-admin-empty" style="font-size:13px;color:var(--muted);margin-bottom:2rem;">No notes yet.</div>
   <div id="notes-admin-list" style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;"></div>
 </div>
-
+ 
 <script type="module">
   import { db } from "../js/firebase.js";
   import {
     collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getStorage, ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-
+ 
   const storage = getStorage();
-
+ 
   // ── ADMIN PASSWORD HASH (SHA-256) ──────────────
   const ADMIN_PASSWORD_HASH = "d5e4f8d3e37d6eaf63a7f6fe0072fe7986ec81f16047d836a755d19c52c8d2b8";
   // ────────────────────────────────────────────────
-
+ 
   let guests = [];
-
+ 
   window.adminLogin = async function() {
     const pass = document.getElementById("admin-pass").value;
     const msgEl = document.getElementById("admin-login-err");
@@ -255,11 +256,11 @@
       msgEl.classList.remove("hidden");
     }
   };
-
+ 
   document.getElementById("admin-pass").addEventListener("keydown", e => {
     if (e.key === "Enter") window.adminLogin();
   });
-
+ 
   async function loadGuests() {
     const snap = await getDocs(collection(db, "guests"));
     guests = [];
@@ -268,7 +269,7 @@
     renderStats();
     populateInvitePicker();
   }
-
+ 
   function renderStats() {
     const confirmed = guests.filter(g => g.status === "confirmed").length;
     const pending   = guests.filter(g => !g.status || g.status === "pending").length;
@@ -277,11 +278,18 @@
     document.getElementById("s-pending").textContent   = pending;
     document.getElementById("s-tickets").textContent   = Math.max(0, 10 - confirmed);
   }
-
+ 
   function renderTable() {
     const tbody = document.getElementById("guest-tbody");
     tbody.innerHTML = "";
-    guests.forEach(g => {
+    const sorted = [...guests].sort((a, b) => {
+      const nameA = (a.name || "").toLowerCase();
+      const nameB = (b.name || "").toLowerCase();
+      if (!a.name && b.name) return 1;
+      if (a.name && !b.name) return -1;
+      return nameA.localeCompare(nameB);
+    });
+    sorted.forEach(g => {
       const tr = document.createElement("tr");
       const hasTicket = !!g.officialTicketUrl;
       const isLocked  = !!g.rsvpLocked;
@@ -305,6 +313,12 @@
             <button onclick="toggleRsvpLock('${g.code}', ${isLocked})" style="background:${isLocked ? 'rgba(255,203,5,0.18)' : 'rgba(255,255,255,0.07)'};border:0.5px solid ${isLocked ? 'var(--maize)' : 'rgba(255,255,255,0.2)'};border-radius:6px;color:${isLocked ? 'var(--maize)' : 'var(--muted)'};font-size:11px;padding:3px 8px;cursor:pointer;" title="${isLocked ? 'Unlock RSVP' : 'Lock RSVP'}">${isLocked ? '🔒 Locked' : '🔓 Lock'}</button>
           </div>
         </td>
+        <td data-label="Ceremony">
+          <select onchange="setCeremony('${g.code}', this.value)" style="background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-size:12px;padding:3px 6px;cursor:pointer;font-family:var(--font);">
+            <option value="april30" ${(!g.ceremony || g.ceremony === 'april30') ? 'selected' : ''}>Apr 30</option>
+            <option value="may2" ${g.ceremony === 'may2' ? 'selected' : ''}>May 2</option>
+          </select>
+        </td>
         <td data-label="Ticket">
           ${hasTicket
             ? `<span class="badge b-released" style="margin-right:6px;">Uploaded ✓</span>
@@ -321,7 +335,7 @@
       tbody.appendChild(tr);
     });
   }
-
+ 
   function statusBadge(s) {
     const map = {
       confirmed: "b-confirmed", virtual: "b-virtual",
@@ -330,28 +344,28 @@
     const label = s || "pending";
     return `<span class="badge ${map[label] || 'b-pending'}">${label}</span>`;
   }
-
+ 
   function generateCode() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     let code = "GRAD-";
     for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
     return code;
   }
-
+ 
   window.addGuest = async function() {
     const name = document.getElementById("new-name").value.trim();
     const rel  = document.getElementById("new-rel").value.trim();
     const msgEl = document.getElementById("add-msg");
     const previewEl = document.getElementById("new-code-preview");
-
+ 
     if (!name) { msgEl.textContent = "Please enter a name."; msgEl.className = "msg error"; msgEl.classList.remove("hidden"); return; }
-
+ 
     let code, exists = true;
     while (exists) {
       code = generateCode();
       exists = guests.some(g => g.code === code);
     }
-
+ 
     try {
       await setDoc(doc(db, "guests", code), {
         name, relationship: rel || "",
@@ -360,13 +374,13 @@
         ticketId: code + "-" + Date.now().toString(36).toUpperCase(),
         createdAt: serverTimestamp()
       });
-
+ 
       document.getElementById("new-code-val").textContent = code;
       previewEl.classList.remove("hidden");
       msgEl.classList.add("hidden");
       document.getElementById("new-name").value = "";
       document.getElementById("new-rel").value  = "";
-
+ 
       await loadGuests();
     } catch (err) {
       msgEl.textContent = "Error adding guest: " + err.message;
@@ -374,27 +388,27 @@
       msgEl.classList.remove("hidden");
     }
   };
-
+ 
   window.uploadTicket = function(code) {
     document.getElementById(`file-${code}`).click();
   };
-
+ 
   window.handleTicketUpload = async function(event, code) {
     const file = event.target.files[0];
     if (!file) return;
-
+ 
     const maxSize = 20 * 1024 * 1024;
     if (file.size > maxSize) { alert("File is too large. Please use a file under 20MB."); return; }
-
+ 
     try {
       const { ref: storageRef, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
       const { storage } = await import("../js/firebase.js");
-
+ 
       const ext      = file.name.split(".").pop();
       const fileRef  = storageRef(storage, `tickets/${code}.${ext}`);
       await uploadBytes(fileRef, file);
       const url = await getDownloadURL(fileRef);
-
+ 
       await updateDoc(doc(db, "guests", code), { officialTicketUrl: url, officialTicketType: file.type });
       await loadGuests();
     } catch (err) {
@@ -402,12 +416,12 @@
       alert("Upload failed: " + err.message);
     }
   };
-
-
+ 
+ 
   // ─── INVITE MESSAGE GENERATOR ─────────────────
   // ─── INVITE MESSAGE GENERATOR ─────────────────
   let inviteGuests = [];
-
+ 
   function populateInvitePicker() {
     const picker = document.getElementById("invite-guest-picker");
     if (!picker) return;
@@ -421,7 +435,7 @@
       picker.appendChild(opt);
     });
   }
-
+ 
   window.addInviteGuestFromPicker = function() {
     const picker = document.getElementById("invite-guest-picker");
     const code   = picker.value;
@@ -429,7 +443,7 @@
     const guest  = guests.find(g => g.code === code);
     if (!guest)  { alert("Guest not found."); return; }
     if (inviteGuests.some(g => g.code === code)) { alert("That guest is already in the list."); return; }
-
+ 
     // Fill first empty slot if one exists, otherwise add new row
     const emptyIndex = inviteGuests.findIndex(g => !g.code && !g.name);
     if (emptyIndex >= 0) {
@@ -437,11 +451,11 @@
     } else {
       inviteGuests.push({ name: guest.name || "", code: guest.code, type: "adult" });
     }
-
+ 
     picker.value = "";
     renderInviteGuestRows();
   };
-
+ 
   function renderInviteGuestRows() {
     const list = document.getElementById("invite-guests-list");
     list.innerHTML = "";
@@ -464,39 +478,39 @@
       list.appendChild(row);
     });
   }
-
+ 
   window.addInviteGuest = function() {
     inviteGuests.push({ name: "", code: "", type: "adult" });
     renderInviteGuestRows();
   };
-
+ 
   window.removeInviteGuest = function(i) {
     inviteGuests.splice(i, 1);
     renderInviteGuestRows();
   };
-
+ 
   window.clearInviteGuests = function() {
     inviteGuests = [];
     renderInviteGuestRows();
     document.getElementById("invite-box-wrap").classList.add("hidden");
   };
-
+ 
   window.generateInviteMessage = function() {
     const filled = inviteGuests.filter(g => g.code.trim());
     if (!filled.length) { alert("Please enter at least one invite code."); return; }
-
+ 
     const siteUrl    = "https://inevitableyellow.github.io/paris-graduation-2026";
     const firstAdult = filled.find(g => g.type === "adult");
     const greeting   = firstAdult?.name ? `Hey ${firstAdult.name}!` : "Hey!";
     const plural     = filled.length > 1;
-
+ 
     const codeLines = filled.map(g => {
       const label = g.name ? `${g.name}'s code` : (g.type === "child" ? "Child's code" : "Your code");
       return `${label}: ${g.code.trim().toUpperCase()}`;
     }).join("\n");
-
+ 
     const msg = `${greeting} I'm so excited to celebrate my graduation with you 🎓\n\nHere are all the details for my UMSI Commencement on April 30th:\n${siteUrl}\n\n${codeLines}\n\nYou'll need ${plural ? "these codes" : "this code"} to access the site, RSVP, and get your ticket${plural ? "s" : ""}. Let me know if you have any questions! 💙`;
-
+ 
     document.getElementById("invite-display-code").innerHTML = filled.map(g =>
       `<span style="display:block;">${g.name ? g.name + " · " : ""}${g.code.trim().toUpperCase()}</span>`
     ).join("");
@@ -505,10 +519,10 @@
     document.getElementById("invite-box-wrap").classList.remove("hidden");
     document.getElementById("copy-confirm").style.display = "none";
   };
-
+ 
   // Initialise with one empty row
   addInviteGuest();
-
+ 
   window.copyInviteMessage = function() {
     const msg = document.getElementById("invite-msg-preview").textContent;
     navigator.clipboard.writeText(msg).then(() => {
@@ -526,14 +540,20 @@
       await loadGuests();
     } catch (err) { alert("Error: " + err.message); }
   };
-
+ 
+  window.setCeremony = async function(code, ceremony) {
+    try {
+      await updateDoc(doc(db, "guests", code), { ceremony });
+    } catch (err) { alert("Error setting ceremony: " + err.message); }
+  };
+ 
   window.toggleRsvpLock = async function(code, isLocked) {
     try {
       await updateDoc(doc(db, "guests", code), { rsvpLocked: !isLocked });
       await loadGuests();
     } catch (err) { alert("Error: " + err.message); }
   };
-
+ 
   window.releaseTicket = async function(code) {
     if (!confirm(`Release ticket for ${code}? The guest will be able to view their QR code.`)) return;
     try {
@@ -541,7 +561,7 @@
       await loadGuests();
     } catch (err) { alert("Error: " + err.message); }
   };
-
+ 
   window.removeGuest = async function(code) {
     if (!confirm(`Remove guest with code ${code}? This cannot be undone.`)) return;
     try {
@@ -549,12 +569,12 @@
       await loadGuests();
     } catch (err) { alert("Error: " + err.message); }
   };
-
+ 
   async function loadAdminPhotos() {
     const grid    = document.getElementById("photo-admin-grid");
     const emptyEl = document.getElementById("photo-admin-empty");
     grid.innerHTML = "";
-
+ 
     try {
       const snap = await getDocs(collection(db, "photos"));
       if (snap.empty) {
@@ -578,7 +598,7 @@
       console.error("Failed to load photos:", err);
     }
   }
-
+ 
   window.deletePhoto = async function(docId, url, btn) {
     if (!confirm("Delete this photo? This cannot be undone.")) return;
     btn.textContent = "...";
@@ -586,7 +606,7 @@
     try {
       // Delete from Firestore
       await deleteDoc(doc(db, "photos", docId));
-
+ 
       // Delete from Storage
       try {
         const filePath = decodeURIComponent(url.split('/o/')[1].split('?')[0]);
@@ -595,10 +615,10 @@
       } catch (e) {
         console.warn("Storage delete failed:", e.message);
       }
-
+ 
       // Remove card from UI
       btn.closest("div[style]").remove();
-
+ 
       // Show empty state if no photos left
       const grid = document.getElementById("photo-admin-grid");
       if (!grid.children.length) {
@@ -610,7 +630,7 @@
       btn.disabled = false;
     }
   };
-
+ 
   async function loadRsvpMessages() {
     const list    = document.getElementById("rsvp-msgs-list");
     const emptyEl = document.getElementById("rsvp-msgs-empty");
@@ -634,12 +654,12 @@
       if (!count) emptyEl.style.display = "block";
     } catch (err) { console.error("Failed to load RSVP messages:", err); }
   }
-
+ 
   async function loadAdminNotes() {
     const list    = document.getElementById("notes-admin-list");
     const emptyEl = document.getElementById("notes-admin-empty");
     list.innerHTML = "";
-
+ 
     try {
       const snap = await getDocs(collection(db, "notes"));
       if (snap.empty) { emptyEl.style.display = "block"; return; }
@@ -660,7 +680,7 @@
       });
     } catch (err) { console.error("Failed to load notes:", err); }
   }
-
+ 
   window.deleteNote = async function(id, btn) {
     if (!confirm("Delete this note? This cannot be undone.")) return;
     btn.textContent = "..."; btn.disabled = true;
