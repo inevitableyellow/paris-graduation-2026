@@ -746,11 +746,11 @@ function generateQR(elementId, data, officialTicketUrl, officialTicketType, save
         <p style="font-size:11px;color:#999;margin-top:4px;">To save offline: open the PDF and save to your device.</p>`;
     } else {
       const img = document.createElement("img");
-      img.src = officialTicketUrl;
+      img.crossOrigin = "anonymous";
       img.id  = imgId;
       img.alt = "Official ticket";
-      img.crossOrigin = "anonymous";
       img.style.cssText = "width:200px;height:auto;border-radius:8px;display:block;margin:0 auto;";
+      img.src = officialTicketUrl;
       wrap.appendChild(img);
       // Show save buttons
       if (saveBtnId) document.getElementById(saveBtnId)?.classList.remove("hidden");
