@@ -140,7 +140,8 @@
     <div class="stat"><div class="stat-num" id="s-total">–</div><div class="stat-label">Total guests</div></div>
     <div class="stat"><div class="stat-num" id="s-confirmed">–</div><div class="stat-label">Confirmed</div></div>
     <div class="stat"><div class="stat-num" id="s-pending">–</div><div class="stat-label">Pending</div></div>
-    <div class="stat"><div class="stat-num" id="s-tickets">–</div><div class="stat-label">Tickets left</div></div>
+    <div class="stat"><div class="stat-num" id="s-apr30">–</div><div class="stat-label">Apr 30 left</div></div>
+    <div class="stat"><div class="stat-num" id="s-may2">–</div><div class="stat-label">May 2 left</div></div>
   </div>
  
   <!-- ADD GUEST -->
@@ -188,8 +189,42 @@
     </div>
   </div>
  
+  <!-- TICKET RELEASE NOTIFICATION GENERATOR -->
+  <div class="section-title" style="margin-top:0.5rem;">Ticket release notification</div>
+  <div class="add-form">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Add the adult guest first, then any children attending with them.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+      <select id="notify-guest-picker" style="flex:1;min-width:160px;background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.2);border-radius:7px;color:white;font-size:13px;padding:8px 10px;cursor:pointer;font-family:var(--font);">
+        <option value="">— Pick from guest list —</option>
+      </select>
+      <button class="btn-outline" onclick="addNotifyGuestFromPicker()">+ Add selected</button>
+      <button class="btn-outline" onclick="addNotifyGuest()">+ Add manually</button>
+    </div>
+    <div id="notify-guests-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <button class="btn" onclick="generateTicketNotification()">Generate message</button>
+      <button class="btn-outline" onclick="clearNotifyGuests()" style="color:#f09595;border-color:rgba(240,149,149,0.3);">Clear all</button>
+    </div>
+    <div id="notify-box-wrap" class="hidden">
+      <div class="invite-box">
+        <div class="invite-msg-preview" id="notify-msg-preview"></div>
+        <div class="invite-actions">
+          <button class="btn-copy" onclick="copyNotifyMessage()">Copy message</button>
+          <a id="notify-sms-link" href="#" class="btn-sms">Open in Messages</a>
+        </div>
+        <div id="notify-copy-confirm" style="font-size:12px;color:#5DCAA5;margin-top:8px;display:none;">Copied to clipboard!</div>
+      </div>
+    </div>
+  </div>
+
   <!-- GUEST LIST -->
   <div class="section-title">Guest list</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;">
+    <button id="filter-all"     onclick="setFilter('all')"     class="btn-outline" style="background:var(--maize-dim);color:var(--maize);">All</button>
+    <button id="filter-april30" onclick="setFilter('april30')" class="btn-outline">Apr 30</button>
+    <button id="filter-may2"    onclick="setFilter('may2')"    class="btn-outline">May 2</button>
+    <button id="filter-both"    onclick="setFilter('both')"    class="btn-outline">Both</button>
+  </div>
   <table class="guest-table">
     <thead>
       <tr>
@@ -270,15 +305,37 @@
     populateInvitePicker();
   }
  
+  const APR30_CAP = 10;
+  const MAY2_CAP  = 6;
+
   function renderStats() {
     const confirmed = guests.filter(g => g.status === "confirmed").length;
     const pending   = guests.filter(g => !g.status || g.status === "pending").length;
+
+    const countable = guests.filter(g => g.status === "confirmed" && !g.skipTicketCount);
+    const usedApr30 = countable.filter(g => !g.ceremony || g.ceremony === "april30" || g.ceremony === "both").length;
+    const usedMay2  = countable.filter(g => g.ceremony === "may2" || g.ceremony === "both").length;
+
     document.getElementById("s-total").textContent     = guests.length;
     document.getElementById("s-confirmed").textContent = confirmed;
     document.getElementById("s-pending").textContent   = pending;
-    document.getElementById("s-tickets").textContent   = Math.max(0, 10 - confirmed);
+    document.getElementById("s-apr30").textContent     = Math.max(0, APR30_CAP - usedApr30);
+    document.getElementById("s-may2").textContent      = Math.max(0, MAY2_CAP  - usedMay2);
   }
  
+  let currentFilter = "all";
+
+  window.setFilter = function(filter) {
+    currentFilter = filter;
+    ["all","april30","may2","both"].forEach(f => {
+      const btn = document.getElementById(`filter-${f}`);
+      if (!btn) return;
+      btn.style.background = f === filter ? "var(--maize-dim)" : "transparent";
+      btn.style.color      = f === filter ? "var(--maize)"    : "";
+    });
+    renderTable();
+  };
+
   function renderTable() {
     const tbody = document.getElementById("guest-tbody");
     tbody.innerHTML = "";
@@ -289,10 +346,59 @@
       if (a.name && !b.name) return -1;
       return nameA.localeCompare(nameB);
     });
-    sorted.forEach(g => {
-      const tr = document.createElement("tr");
-      const hasTicket = !!g.officialTicketUrl;
-      const isLocked  = !!g.rsvpLocked;
+    const filtered = currentFilter === "all" ? sorted : sorted.filter(g => {
+      if (currentFilter === "both")    return g.ceremony === "both";
+      if (currentFilter === "april30") return !g.ceremony || g.ceremony === "april30";
+      if (currentFilter === "may2")    return g.ceremony === "may2";
+      return true;
+    });
+    filtered.forEach(g => {
+      const tr       = document.createElement("tr");
+      const isLocked = !!g.rsvpLocked;
+      const isBoth   = g.ceremony === "both";
+      const t        = g.tickets || {};
+
+      // Ticket / release state per ceremony
+      const hasTicketApr = isBoth ? !!(t.april30?.url) : !!g.officialTicketUrl;
+      const hasTicketMay = isBoth ? !!(t.may2?.url)    : false;
+      const relApr       = isBoth ? !!(t.april30?.released) : !!g.ticketReleased;
+      const relMay       = isBoth ? !!(t.may2?.released)    : false;
+
+      const ticketCol = isBoth ? `
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);min-width:38px;">Apr 30</span>
+            ${hasTicketApr ? `<span class="badge b-released" style="margin-right:4px;font-size:10px;">✓</span><button class="btn-outline" onclick="uploadTicket('${g.code}','april30')">Replace</button>${t.april30?.fileName ? `<div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:2px;">${t.april30.fileName}</div>` : ""}` : `<button class="btn-outline" onclick="uploadTicket('${g.code}','april30')">Upload</button>`}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);min-width:38px;">May 2</span>
+            ${hasTicketMay ? `<span class="badge b-released" style="margin-right:4px;font-size:10px;">✓</span><button class="btn-outline" onclick="uploadTicket('${g.code}','may2')">Replace</button>${t.may2?.fileName ? `<div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:2px;">${t.may2.fileName}</div>` : ""}` : `<button class="btn-outline" onclick="uploadTicket('${g.code}','may2')">Upload</button>`}
+          </div>
+        </div>
+        <input type="file" id="file-${g.code}-april30" accept="image/*,application/pdf" style="display:none" onchange="handleTicketUpload(event,'${g.code}','april30')" />
+        <input type="file" id="file-${g.code}-may2"    accept="image/*,application/pdf" style="display:none" onchange="handleTicketUpload(event,'${g.code}','may2')" />
+      ` : `
+        ${hasTicketApr
+          ? `<span class="badge b-released" style="margin-right:6px;">Uploaded ✓</span><button class="btn-outline" onclick="uploadTicket('${g.code}')">Replace</button>${g.officialTicketName ? `<div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-top:4px;">${g.officialTicketName}</div>` : ""}`
+          : `<button class="btn-outline" onclick="uploadTicket('${g.code}')">Upload ticket</button>`}
+        <input type="file" id="file-${g.code}" accept="image/*,application/pdf" style="display:none" onchange="handleTicketUpload(event,'${g.code}')" />
+      `;
+
+      const releaseCol = isBoth ? `
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);min-width:38px;">Apr 30</span>
+            ${relApr ? '<span class="badge b-released">Released</span>' : `<button class="btn-outline" ${!hasTicketApr ? 'disabled title="Upload ticket first"' : ''} onclick="releaseTicket('${g.code}','april30')" style="${!hasTicketApr ? 'opacity:0.4;cursor:not-allowed;' : ''}">Release</button>`}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);min-width:38px;">May 2</span>
+            ${relMay ? '<span class="badge b-released">Released</span>' : `<button class="btn-outline" ${!hasTicketMay ? 'disabled title="Upload ticket first"' : ''} onclick="releaseTicket('${g.code}','may2')" style="${!hasTicketMay ? 'opacity:0.4;cursor:not-allowed;' : ''}">Release</button>`}
+          </div>
+        </div>
+      ` : `
+        ${relApr ? '<span class="badge b-released">Released</span>' : `<button class="btn-outline" ${!hasTicketApr ? 'disabled title="Upload official ticket first"' : ''} onclick="releaseTicket('${g.code}')" style="${!hasTicketApr ? 'opacity:0.4;cursor:not-allowed;' : ''}">Release</button>`}
+      `;
+
       tr.innerHTML = `
         <td data-label="Name">${g.name || "<span style='color:var(--dim)'>Not yet set</span>"}</td>
         <td data-label="Relationship" style="color:var(--muted)">${g.relationship || "–"}</td>
@@ -311,25 +417,18 @@
               <option value="declined">Declined</option>
             </select>
             <button onclick="toggleRsvpLock('${g.code}', ${isLocked})" style="background:${isLocked ? 'rgba(255,203,5,0.18)' : 'rgba(255,255,255,0.07)'};border:0.5px solid ${isLocked ? 'var(--maize)' : 'rgba(255,255,255,0.2)'};border-radius:6px;color:${isLocked ? 'var(--maize)' : 'var(--muted)'};font-size:11px;padding:3px 8px;cursor:pointer;" title="${isLocked ? 'Unlock RSVP' : 'Lock RSVP'}">${isLocked ? '🔒 Locked' : '🔓 Lock'}</button>
+            <button onclick="toggleSkipCount('${g.code}', ${!!g.skipTicketCount})" style="background:${g.skipTicketCount ? 'rgba(255,203,5,0.18)' : 'rgba(255,255,255,0.07)'};border:0.5px solid ${g.skipTicketCount ? 'var(--maize)' : 'rgba(255,255,255,0.2)'};border-radius:6px;color:${g.skipTicketCount ? 'var(--maize)' : 'var(--muted)'};font-size:11px;padding:3px 8px;cursor:pointer;" title="${g.skipTicketCount ? 'Include in ticket count' : 'Exclude from ticket cap'}">${g.skipTicketCount ? '★ Exempt' : '☆ Exempt'}</button>
           </div>
         </td>
         <td data-label="Ceremony">
           <select onchange="setCeremony('${g.code}', this.value)" style="background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.2);border-radius:6px;color:white;font-size:12px;padding:3px 6px;cursor:pointer;font-family:var(--font);">
             <option value="april30" ${(!g.ceremony || g.ceremony === 'april30') ? 'selected' : ''}>Apr 30</option>
-            <option value="may2" ${g.ceremony === 'may2' ? 'selected' : ''}>May 2</option>
+            <option value="may2"    ${g.ceremony === 'may2'  ? 'selected' : ''}>May 2</option>
+            <option value="both"    ${g.ceremony === 'both'  ? 'selected' : ''}>Both</option>
           </select>
         </td>
-        <td data-label="Ticket">
-          ${hasTicket
-            ? `<span class="badge b-released" style="margin-right:6px;">Uploaded ✓</span>
-               <button class="btn-outline" onclick="uploadTicket('${g.code}')">Replace</button>`
-            : `<button class="btn-outline" onclick="uploadTicket('${g.code}')">Upload ticket</button>`}
-          <input type="file" id="file-${g.code}" accept="image/*,application/pdf" style="display:none" onchange="handleTicketUpload(event,'${g.code}')" />
-        </td>
-        <td data-label="Release">${g.ticketReleased
-          ? '<span class="badge b-released">Released</span>'
-          : `<button class="btn-outline" ${!hasTicket ? 'disabled title="Upload official ticket first"' : ''} onclick="releaseTicket('${g.code}')"
-              style="${!hasTicket ? 'opacity:0.4;cursor:not-allowed;' : ''}">Release</button>`}</td>
+        <td data-label="Ticket">${ticketCol}</td>
+        <td data-label="Release">${releaseCol}</td>
         <td data-label=""><button class="btn-sm-red" onclick="removeGuest('${g.code}')">Remove</button></td>
       `;
       tbody.appendChild(tr);
@@ -389,27 +488,39 @@
     }
   };
  
-  window.uploadTicket = function(code) {
-    document.getElementById(`file-${code}`).click();
+  window.uploadTicket = function(code, ceremony) {
+    const fileId = ceremony ? `file-${code}-${ceremony}` : `file-${code}`;
+    document.getElementById(fileId).click();
   };
- 
-  window.handleTicketUpload = async function(event, code) {
+
+  window.handleTicketUpload = async function(event, code, ceremony) {
     const file = event.target.files[0];
     if (!file) return;
- 
+
     const maxSize = 20 * 1024 * 1024;
     if (file.size > maxSize) { alert("File is too large. Please use a file under 20MB."); return; }
- 
+
     try {
       const { ref: storageRef, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js");
       const { storage } = await import("../js/firebase.js");
- 
-      const ext      = file.name.split(".").pop();
-      const fileRef  = storageRef(storage, `tickets/${code}.${ext}`);
+
+      const ext     = file.name.split(".").pop();
+      const suffix  = ceremony ? `-${ceremony}` : "";
+      const fileRef = storageRef(storage, `tickets/${code}${suffix}.${ext}`);
       await uploadBytes(fileRef, file);
       const url = await getDownloadURL(fileRef);
- 
-      await updateDoc(doc(db, "guests", code), { officialTicketUrl: url, officialTicketType: file.type });
+
+      if (ceremony) {
+        const ticketId = `${code}-${ceremony === 'april30' ? 'APR30' : 'MAY2'}-${Date.now().toString(36).toUpperCase()}`;
+        const updates = {};
+        updates[`tickets.${ceremony}.url`]      = url;
+        updates[`tickets.${ceremony}.type`]     = file.type;
+        updates[`tickets.${ceremony}.ticketId`] = ticketId;
+        updates[`tickets.${ceremony}.fileName`] = file.name;
+        await updateDoc(doc(db, "guests", code), updates);
+      } else {
+        await updateDoc(doc(db, "guests", code), { officialTicketUrl: url, officialTicketType: file.type, officialTicketName: file.name });
+      }
       await loadGuests();
     } catch (err) {
       console.error(err);
@@ -434,6 +545,7 @@
       opt.textContent = `${g.name || "Unnamed"} · ${g.code}`;
       picker.appendChild(opt);
     });
+    populateNotifyPicker();
   }
  
   window.addInviteGuestFromPicker = function() {
@@ -543,7 +655,13 @@
  
   window.setCeremony = async function(code, ceremony) {
     try {
-      await updateDoc(doc(db, "guests", code), { ceremony });
+      const updates = { ceremony };
+      if (ceremony === "both") {
+        const guest = guests.find(g => g.code === code);
+        if (guest && !guest.tickets) updates.tickets = { april30: {}, may2: {} };
+      }
+      await updateDoc(doc(db, "guests", code), updates);
+      await loadGuests();
     } catch (err) { alert("Error setting ceremony: " + err.message); }
   };
  
@@ -553,11 +671,25 @@
       await loadGuests();
     } catch (err) { alert("Error: " + err.message); }
   };
- 
-  window.releaseTicket = async function(code) {
-    if (!confirm(`Release ticket for ${code}? The guest will be able to view their QR code.`)) return;
+
+  window.toggleSkipCount = async function(code, current) {
     try {
-      await updateDoc(doc(db, "guests", code), { ticketReleased: true });
+      await updateDoc(doc(db, "guests", code), { skipTicketCount: !current });
+      await loadGuests();
+    } catch (err) { alert("Error: " + err.message); }
+  };
+ 
+  window.releaseTicket = async function(code, ceremony) {
+    const label = ceremony ? `${code} (${ceremony === 'april30' ? 'Apr 30' : 'May 2'})` : code;
+    if (!confirm(`Release ticket for ${label}? The guest will be able to view their QR code.`)) return;
+    try {
+      if (ceremony) {
+        const updates = {};
+        updates[`tickets.${ceremony}.released`] = true;
+        await updateDoc(doc(db, "guests", code), updates);
+      } else {
+        await updateDoc(doc(db, "guests", code), { ticketReleased: true });
+      }
       await loadGuests();
     } catch (err) { alert("Error: " + err.message); }
   };
@@ -681,6 +813,128 @@
     } catch (err) { console.error("Failed to load notes:", err); }
   }
  
+  // ─── TICKET RELEASE NOTIFICATION ─────────────
+  const CEREMONY_DAYS = { april30: "Thursday, April 30", may2: "Saturday, May 2" };
+  const SITE_URL = "https://inevitableyellow.github.io/paris-graduation-2026";
+
+  let notifyGuests = [];
+
+  function populateNotifyPicker() {
+    const picker = document.getElementById("notify-guest-picker");
+    if (!picker) return;
+    picker.innerHTML = '<option value="">— Pick from guest list —</option>';
+    [...guests].sort((a, b) => (a.name || "").localeCompare(b.name || "")).forEach(g => {
+      if (!g.code) return;
+      const opt = document.createElement("option");
+      opt.value = g.code;
+      opt.textContent = `${g.name || "Unnamed"} · ${g.code}`;
+      picker.appendChild(opt);
+    });
+  }
+
+  function renderNotifyGuestRows() {
+    const list = document.getElementById("notify-guests-list");
+    list.innerHTML = "";
+    if (notifyGuests.length === 0) { addNotifyGuest(); return; }
+    notifyGuests.forEach((g, i) => {
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;border:0.5px solid rgba(255,255,255,0.08);";
+      row.innerHTML = `
+        <input value="${g.name}" placeholder="Name" oninput="notifyGuests[${i}].name=this.value" style="flex:1;min-width:100px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.15);border-radius:7px;padding:7px 10px;color:white;font-family:var(--font);font-size:16px;outline:none;" />
+        <input value="${g.code}" placeholder="Invite code" oninput="notifyGuests[${i}].code=this.value.toUpperCase()" style="flex:1;min-width:100px;background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.15);border-radius:7px;padding:7px 10px;color:white;font-family:var(--mono);font-size:16px;letter-spacing:0.06em;outline:none;" />
+        <select oninput="notifyGuests[${i}].type=this.value" style="background:rgba(255,255,255,0.07);border:0.5px solid rgba(255,255,255,0.2);border-radius:7px;color:white;font-size:13px;padding:7px 8px;cursor:pointer;font-family:var(--font);">
+          <option value="adult" ${g.type==="adult"?"selected":""}>Adult</option>
+          <option value="child" ${g.type==="child"?"selected":""}>Child</option>
+        </select>
+        ${notifyGuests.length > 1 ? `<button onclick="removeNotifyGuest(${i})" style="background:transparent;border:none;color:#f09595;font-size:16px;cursor:pointer;padding:4px;">✕</button>` : ""}
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  window.addNotifyGuest = function() {
+    notifyGuests.push({ name: "", code: "", type: "adult" });
+    renderNotifyGuestRows();
+  };
+
+  window.addNotifyGuestFromPicker = function() {
+    const picker = document.getElementById("notify-guest-picker");
+    const code   = picker.value;
+    if (!code) { alert("Please select a guest first."); return; }
+    const guest  = guests.find(g => g.code === code);
+    if (!guest)  { alert("Guest not found."); return; }
+    if (notifyGuests.some(g => g.code === code)) { alert("That guest is already in the list."); return; }
+    const emptyIndex = notifyGuests.findIndex(g => !g.code && !g.name);
+    if (emptyIndex >= 0) {
+      notifyGuests[emptyIndex] = { name: guest.name || "", code: guest.code, type: "adult" };
+    } else {
+      notifyGuests.push({ name: guest.name || "", code: guest.code, type: "adult" });
+    }
+    picker.value = "";
+    renderNotifyGuestRows();
+  };
+
+  window.removeNotifyGuest = function(i) {
+    notifyGuests.splice(i, 1);
+    renderNotifyGuestRows();
+  };
+
+  window.clearNotifyGuests = function() {
+    notifyGuests = [];
+    renderNotifyGuestRows();
+    document.getElementById("notify-box-wrap").classList.add("hidden");
+  };
+
+  window.generateTicketNotification = function() {
+    const filled = notifyGuests.filter(g => g.code.trim());
+    if (!filled.length) { alert("Please enter at least one invite code."); return; }
+
+    const firstAdult = filled.find(g => g.type === "adult");
+    const greeting   = firstAdult?.name ? `Hey ${firstAdult.name}!` : "Hey!";
+    const hasChildren = filled.some(g => g.type === "child");
+    const plural     = filled.length > 1;
+
+    // Determine ceremony day from first adult's guest record
+    const adultRecord = firstAdult ? guests.find(g => g.code === firstAdult.code) : null;
+    let dayNote;
+    if (adultRecord?.ceremony === "both") {
+      const t = adultRecord.tickets || {};
+      const aprRel = !!(t.april30?.released);
+      const mayRel = !!(t.may2?.released);
+      dayNote = (aprRel && mayRel)
+        ? "Thursday, April 30 and Saturday, May 2"
+        : aprRel ? "Thursday, April 30" : "Saturday, May 2";
+    } else {
+      dayNote = CEREMONY_DAYS[adultRecord?.ceremony] || CEREMONY_DAYS.april30;
+    }
+
+    const codeLines = filled.map(g => {
+      const label = g.name ? `${g.name}'s code` : (g.type === "child" ? "Child's code" : "Your code");
+      return `${label}: ${g.code.trim().toUpperCase()}`;
+    }).join("\n");
+
+    const saveInstructions = `On iPhone: hold the ticket image and tap "Save to Photos," or take a screenshot. On Android: tap "Download" or screenshot it.`;
+
+    const msg = `${greeting} Your graduation ticket${plural ? "s are" : " is"} now available 🎓\n\nYou can view ${plural ? "all your tickets" : "your ticket"} here:\n${SITE_URL}\n\n${codeLines}\n\n⚠️ Please save ${plural ? "each ticket" : "your ticket"} to your device before ${dayNote} — internet access will be limited on site and you'll need ${plural ? "them" : "it"} to get in.${hasChildren ? "\n\nRemember to have each person save their own ticket!" : ""}\n\n${saveInstructions}\n\nSee you soon! 💙`;
+
+    document.getElementById("notify-msg-preview").textContent = msg;
+    document.getElementById("notify-sms-link").href = "sms:?body=" + encodeURIComponent(msg);
+    document.getElementById("notify-box-wrap").classList.remove("hidden");
+    document.getElementById("notify-copy-confirm").style.display = "none";
+  };
+
+  window.copyNotifyMessage = function() {
+    const msg = document.getElementById("notify-msg-preview").textContent;
+    navigator.clipboard.writeText(msg).then(() => {
+      const confirm = document.getElementById("notify-copy-confirm");
+      confirm.style.display = "block";
+      setTimeout(() => confirm.style.display = "none", 2500);
+    });
+  };
+
+  addNotifyGuest();
+  // ─────────────────────────────────────────────
+
   window.deleteNote = async function(id, btn) {
     if (!confirm("Delete this note? This cannot be undone.")) return;
     btn.textContent = "..."; btn.disabled = true;

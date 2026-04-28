@@ -7,7 +7,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 // ─── STATE ───────────────────────────────────
-let currentGuest = null; // { code, name, status, ticketId, ticketReleased }
+let currentGuest = null;
+let activeCeremonyView = "april30"; // for guests attending both ceremonies
 
 // ─── CEREMONY CONFIG ─────────────────────────
 const CEREMONIES = {
@@ -82,8 +83,23 @@ const CEREMONIES = {
 };
 
 function getCeremony() {
-  return CEREMONIES[currentGuest?.ceremony] || CEREMONIES.april30;
+  const key = currentGuest?.ceremony === "both" ? activeCeremonyView : currentGuest?.ceremony;
+  return CEREMONIES[key] || CEREMONIES.april30;
 }
+
+window.switchCeremonyView = function(key) {
+  activeCeremonyView = key;
+  ["april30", "may2"].forEach(k => {
+    const btn = document.getElementById(`csw-${k}`);
+    if (!btn) return;
+    btn.style.background = k === key ? "var(--maize)" : "transparent";
+    btn.style.color      = k === key ? "#00274C"      : "rgba(255,255,255,0.5)";
+    btn.style.fontWeight = k === key ? "500"           : "400";
+  });
+  renderInfoTab();
+  updateCountdown();
+  loadWeather();
+};
 
 // ─── COUNTDOWN ───────────────────────────────
 function updateCountdown() {
@@ -201,6 +217,11 @@ window.verifyInvite = async function() {
     document.getElementById("login-screen").classList.add("hidden");
     document.getElementById("main-screen").classList.remove("hidden");
 
+    // Show ceremony switcher only for guests attending both ceremonies
+    const switcher = document.getElementById("ceremony-switcher");
+    if (switcher) switcher.style.display = currentGuest.ceremony === "both" ? "block" : "none";
+    if (currentGuest.ceremony === "both") window.switchCeremonyView("april30");
+
     // Populate all ceremony-specific content
     renderInfoTab();
     updateCountdown();
@@ -302,8 +323,8 @@ function showModal(title, body, eyebrow) {
     document.getElementById("modal-cancel-btn").onclick  = () => close(false);
   });
 }
-const RSVP_DEADLINE   = new Date("2026-04-20T23:59:59-04:00");
-const MAX_IN_PERSON   = 10;
+const RSVP_DEADLINE   = new Date("2026-04-28T23:59:59-04:00");
+const CEREMONY_CAPS   = { april30: 10, may2: 6 };
 const PARIS_PHONE     = "+16165660701";
 
 // ─── EVENT CONFIG ─────────────────────────────
@@ -430,14 +451,17 @@ window.submitRsvp = async function() {
       return;
     }
 
+    const guestCeremony = currentGuest.ceremony || "april30";
+    const cap = CEREMONY_CAPS[guestCeremony] ?? CEREMONY_CAPS.april30;
     const snap = await getDocs(collection(db, "guests"));
     let inPersonCount = 0;
     snap.forEach(d => {
       const g = d.data();
-      if (d.id !== currentGuest.code && g.status === "confirmed") inPersonCount++;
+      if (d.id === currentGuest.code || g.status !== "confirmed" || g.skipTicketCount) return;
+      if (g.ceremony === guestCeremony || g.ceremony === "both" || (!g.ceremony && guestCeremony === "april30")) inPersonCount++;
     });
-    if (inPersonCount >= MAX_IN_PERSON) {
-      errEl.textContent = "Sorry, all in-person tickets have been allocated. You can still attend virtually!";
+    if (inPersonCount >= cap) {
+      errEl.textContent = "Sorry, all in-person tickets have been allocated for this ceremony. You can still attend virtually!";
       errEl.classList.remove("hidden");
       return;
     }
@@ -626,35 +650,74 @@ function showChildConfirmed(name, age) {
 async function renderTicket() {
   if (!currentGuest) return;
 
-  const pendingEl    = document.getElementById("ticket-pending-msg");
-  const cardEl       = document.getElementById("ticket-card");
-  const childCardEl  = document.getElementById("child-ticket-card");
+  const pendingEl   = document.getElementById("ticket-pending-msg");
+  const cardEl      = document.getElementById("ticket-card");
+  const childCardEl = document.getElementById("child-ticket-card");
+  const may2CardEl  = document.getElementById("may2-ticket-card");
 
-  // Show ticket only if released by admin AND guest confirmed in person
-  if (!currentGuest.ticketReleased || currentGuest.status !== "confirmed") {
+  const hideAll = () => {
     pendingEl.classList.remove("hidden");
     cardEl.classList.add("hidden");
-    childCardEl.classList.add("hidden");
+    if (childCardEl) childCardEl.classList.add("hidden");
+    if (may2CardEl)  may2CardEl.classList.add("hidden");
+  };
+
+  if (currentGuest.status !== "confirmed") { hideAll(); return; }
+
+  // ── Both-ceremony guests ──────────────────────
+  if (currentGuest.ceremony === "both") {
+    const t    = currentGuest.tickets || {};
+    const apr  = t.april30 || {};
+    const may2 = t.may2    || {};
+
+    if (!apr.released && !may2.released) { hideAll(); return; }
+
+    pendingEl.classList.add("hidden");
+
+    if (apr.released) {
+      cardEl.classList.remove("hidden");
+      document.getElementById("ticket-name-display").textContent  = currentGuest.name || "Guest";
+      document.getElementById("ticket-id-display").textContent    = apr.ticketId || currentGuest.ticketId || currentGuest.code;
+      document.getElementById("ticket-date-display").textContent  = "Thursday, April 30, 2026";
+      document.getElementById("ticket-venue-display").textContent = "Crisler Center, Ann Arbor";
+      const qrData = `https://inevitableyellow.github.io/paris-graduation-2026/verify.html?id=${apr.ticketId || currentGuest.code}`;
+      generateQR("ticket-qr", qrData, apr.url, apr.type, "ticket-save-btns");
+    } else {
+      cardEl.classList.add("hidden");
+    }
+
+    if (may2.released && may2CardEl) {
+      may2CardEl.classList.remove("hidden");
+      document.getElementById("may2-ticket-name-display").textContent = currentGuest.name || "Guest";
+      document.getElementById("may2-ticket-id-display").textContent   = may2.ticketId || currentGuest.code + "-MAY2";
+      const may2QrData = `https://inevitableyellow.github.io/paris-graduation-2026/verify.html?id=${may2.ticketId || currentGuest.code + "-MAY2"}`;
+      generateQR("may2-ticket-qr", may2QrData, may2.url, may2.type, "may2-ticket-save-btns");
+    } else if (may2CardEl) {
+      may2CardEl.classList.add("hidden");
+    }
     return;
   }
 
+  // ── Single-ceremony guests ────────────────────
+  if (!currentGuest.ticketReleased) { hideAll(); return; }
+
   pendingEl.classList.add("hidden");
   cardEl.classList.remove("hidden");
+  if (may2CardEl) may2CardEl.classList.add("hidden");
 
   document.getElementById("ticket-name-display").textContent = currentGuest.name || "Guest";
   document.getElementById("ticket-id-display").textContent   = currentGuest.ticketId || currentGuest.code;
 
-  // Generate QR code
   const qrData = `https://inevitableyellow.github.io/paris-graduation-2026/verify.html?id=${currentGuest.ticketId || currentGuest.code}`;
   generateQR("ticket-qr", qrData, currentGuest.officialTicketUrl, currentGuest.officialTicketType, "ticket-save-btns");
 
-  // Child ticket — show if linked child with ticket and released
+  // Child ticket
   if (currentGuest.linkedChild?.needsTicket && currentGuest.linkedChild?.code) {
     try {
       const childSnap = await getDoc(doc(db, "guests", currentGuest.linkedChild.code));
       if (childSnap.exists()) {
         const child = childSnap.data();
-        if (child.ticketReleased) {
+        if (child.ticketReleased && childCardEl) {
           childCardEl.classList.remove("hidden");
           document.getElementById("child-ticket-name-display").textContent = currentGuest.linkedChild.name;
           document.getElementById("child-ticket-id-display").textContent   = child.ticketId || currentGuest.linkedChild.code;

@@ -80,6 +80,15 @@
           <div style="font-size:13px;color:var(--text-muted);">Education, experience, future plans & leave a note</div>
         </a>
 
+        <!-- CEREMONY SWITCHER — only shown for guests attending both ceremonies -->
+        <div id="ceremony-switcher" style="display:none;margin-bottom:1.5rem;">
+          <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--maize);opacity:0.7;margin-bottom:0.6rem;">Viewing ceremony</div>
+          <div style="display:flex;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,203,5,0.2);border-radius:999px;padding:3px;gap:3px;">
+            <button id="csw-april30" onclick="switchCeremonyView('april30')" style="flex:1;padding:9px 16px;border-radius:999px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.15s,color 0.15s;background:var(--maize);color:#00274C;">Apr 30 · Crisler</button>
+            <button id="csw-may2"    onclick="switchCeremonyView('may2')"    style="flex:1;padding:9px 16px;border-radius:999px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:400;cursor:pointer;transition:background 0.15s,color 0.15s;background:transparent;color:rgba(255,255,255,0.5);">May 2 · Stadium</button>
+          </div>
+        </div>
+
         <div class="info-block">
           <div class="info-label">Ceremony</div>
           <div class="info-main">UMSI Commencement 2026</div>
@@ -442,6 +451,41 @@
             <button onclick="downloadTicket('ticket-qr-img', 'my-ticket')" style="background:transparent;color:#00274C;border:1px solid #00274C;border-radius:8px;padding:9px 16px;font-size:13px;cursor:pointer;">↓ Download</button>
           </div>
         </div>
+        <!-- MAY 2 TICKET (guests attending both ceremonies) -->
+        <div id="may2-ticket-card" class="ticket-card hidden" style="margin-top:1.5rem;">
+          <div class="ticket-header" style="background:#1a3a5c;">
+            <div class="ticket-event">UMSI Commencement 2026 · May 2</div>
+            <div class="ticket-name" id="may2-ticket-name-display"></div>
+          </div>
+          <div class="ticket-details">
+            <div class="ticket-detail-row">
+              <span class="td-label">Date</span>
+              <span class="td-val">Saturday, May 2, 2026</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Time</span>
+              <span class="td-val">10:00 AM – 12:00 PM EDT</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Venue</span>
+              <span class="td-val">Michigan Stadium, Ann Arbor</span>
+            </div>
+            <div class="ticket-detail-row">
+              <span class="td-label">Ticket ID</span>
+              <span class="td-val mono" id="may2-ticket-id-display"></span>
+            </div>
+          </div>
+          <div class="ticket-qr-wrap">
+            <div id="may2-ticket-qr"></div>
+            <div class="ticket-qr-note">Present this QR code at the door. Single-use only.</div>
+          </div>
+          <div class="ticket-footer">paris-graduation-2026.github.io</div>
+          <div id="may2-ticket-save-btns" class="hidden" style="display:flex;gap:8px;padding:0.75rem 1.25rem;background:rgba(0,39,76,0.04);border-top:0.5px dashed rgba(0,39,76,0.12);justify-content:center;flex-wrap:wrap;">
+            <button onclick="saveTicketToPhotos('may2-ticket-qr-img')" style="background:#00274C;color:#FFCB05;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:500;cursor:pointer;">↓ Save to camera roll</button>
+            <button onclick="downloadTicket('may2-ticket-qr-img', 'may2-ticket')" style="background:transparent;color:#00274C;border:1px solid #00274C;border-radius:8px;padding:9px 16px;font-size:13px;cursor:pointer;">↓ Download</button>
+          </div>
+        </div>
+
         <!-- CHILD TICKET -->
         <div id="child-ticket-card" class="ticket-card hidden" style="margin-top:1.5rem;">
           <div class="ticket-header" style="background:#003566;">
