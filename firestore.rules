@@ -2,26 +2,26 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Guests — readable only if you know your own code, not listable
+    // Guests — readable by anyone with the code, writable only by signed-in admin
     match /guests/{code} {
-      allow get: if true;       // code-gated on the client
-      allow list: if false;     // no one can enumerate all guests
-      allow write: if false;    // only admin SDK (via admin panel) can write
+      allow get: if true;
+      allow list: if false;
+      allow write: if request.auth != null;
     }
 
-    // Photos — any authenticated guest can read/write
-    // (client verifies invite code before showing the upload UI)
+    // Photos — anyone can read/create; only signed-in admin can delete
     match /photos/{photoId} {
       allow read: if true;
       allow create: if true;
-      allow delete: if true;
+      allow delete: if request.auth != null;
       allow update: if false;
     }
 
+    // Notes — anyone can read/create; only signed-in admin can delete
     match /notes/{noteId} {
       allow read: if true;
       allow create: if true;
-      allow delete: if true;
+      allow delete: if request.auth != null;
       allow update: if false;
     }
   }

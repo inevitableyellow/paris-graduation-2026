@@ -121,17 +121,29 @@
 <!-- ADMIN LOGIN -->
 <div id="admin-login">
   <h2>Admin Access</h2>
-  <p style="font-size:13px;color:rgba(255,255,255,0.45);">Enter your admin password to continue</p>
-  <input id="admin-pass" type="password" placeholder="Password" />
-  <button class="btn" onclick="adminLogin()">Enter →</button>
-  <div id="admin-login-err" class="msg error hidden">Incorrect password.</div>
+  <button class="btn" onclick="adminGoogleLogin()" style="display:flex;align-items:center;gap:10px;padding:11px 20px;font-size:15px;">
+    <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+    Sign in with Google
+  </button>
+  <div style="display:flex;align-items:center;gap:10px;width:min(260px,100%);margin:4px 0;">
+    <div style="flex:1;height:0.5px;background:rgba(255,255,255,0.15);"></div>
+    <span style="font-size:12px;color:rgba(255,255,255,0.3);">or</span>
+    <div style="flex:1;height:0.5px;background:rgba(255,255,255,0.15);"></div>
+  </div>
+  <input id="admin-email" type="email" placeholder="Email" autocomplete="username" />
+  <input id="admin-pass" type="password" placeholder="Password" autocomplete="current-password" />
+  <button class="btn" onclick="adminLogin()" style="background:transparent;border:0.5px solid rgba(255,255,255,0.2);color:var(--white);">Sign in with email →</button>
+  <div id="admin-login-err" class="msg error hidden">Incorrect email or password.</div>
 </div>
  
 <!-- ADMIN PANEL -->
 <div id="admin-panel" class="page hidden">
-  <div class="admin-header">
-    <h1>Paris's Graduation · Admin</h1>
-    <p>Manage guests, invite codes, and ticket release</p>
+  <div class="admin-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">
+    <div>
+      <h1>Paris's Graduation · Admin</h1>
+      <p>Manage guests, invite codes, and ticket release</p>
+    </div>
+    <button class="btn-outline" onclick="adminSignOut()" style="flex-shrink:0;margin-top:4px;">Sign out</button>
   </div>
  
   <!-- STATS -->
@@ -258,40 +270,66 @@
 </div>
  
 <script type="module">
-  import { db } from "../js/firebase.js";
+  import { db, auth } from "../js/firebase.js";
   import {
     collection, getDocs, doc, setDoc, updateDoc, deleteDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getStorage, ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+  import {
+    signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
+    signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
  
   const storage = getStorage();
  
-  // ── ADMIN PASSWORD HASH (SHA-256) ──────────────
-  const ADMIN_PASSWORD_HASH = "d5e4f8d3e37d6eaf63a7f6fe0072fe7986ec81f16047d836a755d19c52c8d2b8";
-  // ────────────────────────────────────────────────
- 
   let guests = [];
- 
+
+  function showPanel() {
+    document.getElementById("admin-login").classList.add("hidden");
+    document.getElementById("admin-panel").classList.remove("hidden");
+    loadGuests();
+    loadAdminPhotos();
+    loadAdminNotes();
+    loadRsvpMessages();
+  }
+
+  function showLogin() {
+    document.getElementById("admin-login").classList.remove("hidden");
+    document.getElementById("admin-panel").classList.add("hidden");
+  }
+
+  onAuthStateChanged(auth, user => { user ? showPanel() : showLogin(); });
+
   window.adminLogin = async function() {
-    const pass = document.getElementById("admin-pass").value;
+    const email = document.getElementById("admin-email").value.trim();
+    const pass  = document.getElementById("admin-pass").value;
     const msgEl = document.getElementById("admin-login-err");
-    const encoder = new TextEncoder();
-    const data = encoder.encode(pass);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
-    if (hashHex === ADMIN_PASSWORD_HASH) {
-      document.getElementById("admin-login").classList.add("hidden");
-      document.getElementById("admin-panel").classList.remove("hidden");
-      loadGuests();
-      loadAdminPhotos();
-      loadAdminNotes();
-      loadRsvpMessages();
-    } else {
+    msgEl.classList.add("hidden");
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (err) {
+      console.error("Login error:", err.code, err.message);
+      msgEl.textContent = err.code === "auth/invalid-credential"
+        ? "Incorrect email or password."
+        : err.message;
       msgEl.classList.remove("hidden");
     }
   };
- 
+
+  window.adminGoogleLogin = async function() {
+    const msgEl = document.getElementById("admin-login-err");
+    msgEl.classList.add("hidden");
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (err) {
+      console.error("Google login error:", err.code, err.message);
+      msgEl.textContent = err.code === "auth/popup-closed-by-user" ? "Sign-in cancelled." : err.message;
+      msgEl.classList.remove("hidden");
+    }
+  };
+
+  window.adminSignOut = async function() { await signOut(auth); };
+
   document.getElementById("admin-pass").addEventListener("keydown", e => {
     if (e.key === "Enter") window.adminLogin();
   });
