@@ -276,7 +276,7 @@
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getStorage, ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
   import {
-    signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
+    signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider,
     signOut, onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
  
@@ -300,6 +300,12 @@
 
   onAuthStateChanged(auth, user => { user ? showPanel() : showLogin(); });
 
+  getRedirectResult(auth).catch(err => {
+    const msgEl = document.getElementById("admin-login-err");
+    msgEl.textContent = err.message;
+    msgEl.classList.remove("hidden");
+  });
+
   window.adminLogin = async function() {
     const email = document.getElementById("admin-email").value.trim();
     const pass  = document.getElementById("admin-pass").value;
@@ -316,16 +322,8 @@
     }
   };
 
-  window.adminGoogleLogin = async function() {
-    const msgEl = document.getElementById("admin-login-err");
-    msgEl.classList.add("hidden");
-    try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
-    } catch (err) {
-      console.error("Google login error:", err.code, err.message);
-      msgEl.textContent = err.code === "auth/popup-closed-by-user" ? "Sign-in cancelled." : err.message;
-      msgEl.classList.remove("hidden");
-    }
+  window.adminGoogleLogin = function() {
+    signInWithRedirect(auth, new GoogleAuthProvider());
   };
 
   window.adminSignOut = async function() { await signOut(auth); };
