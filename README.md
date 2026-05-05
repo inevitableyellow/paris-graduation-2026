@@ -44,7 +44,7 @@ Guests see: Info, RSVP, My Ticket, and Photos tabs. Links to the About page and 
 - Each entry includes a synopsis and a Bookshop.org link
 
 ### Admin Panel (`admin/index.html`)
-- SHA-256 hashed password protection
+- **Firebase Authentication** — sign in with Google (restricted to `pmheard@umich.edu`); email/password as fallback
 - Fully mobile responsive — table collapses to cards on small screens
 - **Overview Stats** — total guests, confirmed, pending, tickets remaining per ceremony
 - **Guest Management** — add guests with ceremony assignment (`april30`, `may2`, or `both`), generate unique invite codes, view/filter RSVP status, remove guests
@@ -123,12 +123,17 @@ Then run:
 gcloud storage buckets update gs://paris-graduation-2026.firebasestorage.app --cors-file=cors.json
 ```
 
-### 5. Admin Password
-The admin password is hashed with SHA-256. To change it:
-```bash
-echo -n "yournewpassword" | sha256sum
-```
-Replace the `ADMIN_PASSWORD_HASH` value in `admin/index.html`.
+### 5. Firebase Authentication
+1. Firebase Console → **Authentication → Get started → Sign-in method**
+2. Enable **Google** and **Email/Password**
+3. Under **Authentication → Users**, add your admin account
+4. Google Cloud Console → **APIs & Services → Credentials** → find the Firebase web API key → under **Application restrictions → HTTP referrers**, add:
+   - `https://paris-graduation-2026.firebaseapp.com/*`
+   - `https://inevitableyellow.github.io/*`
+5. Google Cloud Console → **APIs & Services → Credentials** → find the OAuth 2.0 Web client → under **Authorized JavaScript origins**, add:
+   - `https://inevitableyellow.github.io`
+   - `https://paris-graduation-2026.firebaseapp.com`
+6. The allowed admin email is hardcoded in `admin/index.html` (`ADMIN_EMAIL`) and in `firestore.rules` (`isAdmin()`). Update both if the email changes.
 
 ### 6. GitHub Pages
 1. Push to the `main` branch of `inevitableyellow/paris-graduation-2026`
