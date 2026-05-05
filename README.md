@@ -1,59 +1,75 @@
-# Paris's Graduation 2026 🎓
+# Paris's Graduation 2026
 
-A private family website for Paris Heard's UMSI Commencement on April 30, 2026. Built with vanilla HTML/CSS/JS, Firebase, and hosted on GitHub Pages.
+A private family website for Paris Heard's UMSI Commencement — April 30 (Crisler Center) and May 2 (Michigan Stadium), 2026. Built with vanilla HTML/CSS/JS, Firebase, and hosted on GitHub Pages.
+
+**Live Site:** https://inevitableyellow.github.io/paris-graduation-2026
+
+---
+
+## Viewer Access
+
+To browse the site, use invite code: `GRAD-RSJD`
+> Note: the QR code on the ticket page is *not* functional.
+
+Guests see: Info, RSVP, My Ticket, and Photos tabs. Links to the About page and Books page are on the Info tab.
 
 ---
 
 ## Features
 
-### Main site
-- **Invite code login** — each guest receives a unique code, session persists across page navigation
-- **Live countdown** to graduation day
-- **Info tab** — ceremony details, schedule, venue, livestream link, and link to the About page
-- **RSVP tab** — guests confirm attendance with the following logic:
-  - Deadline enforcement (April 20th) — form locks after the deadline
-  - Ticket cap (10 in-person tickets) — blocks confirmations once full
-  - Virtual attendance warning — guests are informed their ticket will be released to others
-  - Virtual guests cannot self-upgrade to in-person after selecting virtual
+### Main Site (`index.html`)
+- **Invite code login**: each guest receives a unique code; session persists across navigation
+- **Live countdown**: to graduation day
+- **Info tab**: ceremony details, schedule, venue, dinner reservation, dress code, parking info, and livestream link
+- **Ceremony switcher**: guests assigned to both ceremonies can toggle between Apr 30 · Crisler and May 2 · Stadium to see ceremony-specific info
+- **RSVP tab** with the following logic:
+  - Deadline enforcement (April 28) — form locks after the deadline
+  - Per-ceremony ticket caps (10 for April 30, 6 for May 2) — blocks confirmations once full
+  - Virtual attendance warning — guests are informed their ticket may be released to others
   - Guests can change their RSVP up until the deadline
-- **Child guest linking** — confirmed in-person guests can link a child's invite code; both tickets appear under the parent's account
-- **My Ticket tab** — displays official ticket (uploaded by admin) in the QR area once released; save to camera roll or download; iOS-aware save flow
-- **Photos tab** — upload photos, tap to expand in a lightbox with navigation, download individual photos or download all
+- **Child guest linking**: confirmed in-person guests can link a child's invite code; both tickets appear under the parent's account, can link a child to multiple parent accounts
+- **My Ticket tab**: displays official QR ticket once released by admin; save to camera roll or download; iOS-aware save flow; guests attending both ceremonies see a card for each
+- **Photos tab**: upload photos, tap to expand in a lightbox with navigation, download individually or all at once
 
-### About page (`about.html`)
-- Seamless session — no second login required if already logged in via main site
-- Bio, education, experience, and skills sections (editable via Git)
-- **Mastery project** section — PDF poster embed with iOS fallback, project stats, and plain-English description
+### About Page (`about.html`)
+- Seamless session — no second login required if already logged in on the main site
+- Expandable bio section
+- Education, work experience, and skills sections
+- **Mastery project** — PDF poster embed with iOS fallback, project stats, and plain-English description
 - **Future plans** section
 - **Notes for the future** — any guest with an invite code can leave Paris a message
 
-### Admin panel (`admin/index.html`)
+### Books Page (`books.html`)
+- Paris's curated reading list organized by category: Favorites, Data Science, Fantasy, Fiction, Political Science
+- Each entry includes a synopsis and a Bookshop.org link
+
+### Admin Panel (`admin/index.html`)
 - SHA-256 hashed password protection
 - Fully mobile responsive — table collapses to cards on small screens
-- **Overview stats** — total guests, confirmed, pending, tickets remaining
-- **Guest management** — add guests, generate unique invite codes, view RSVP status, remove guests
-- **Invite link generator** — enter a guest's code and name, generates a ready-to-send message with copy and "Open in Messages" buttons
-- **Official ticket upload** — upload the university-issued ticket (image or PDF) per guest; Release button is locked until a ticket is uploaded
-- **Ticket release** — releases the ticket to the guest's account
-- **Photo management** — view all uploaded photos in a grid, delete individual photos
+- **Overview Stats** — total guests, confirmed, pending, tickets remaining per ceremony
+- **Guest Management** — add guests with ceremony assignment (`april30`, `may2`, or `both`), generate unique invite codes, view/filter RSVP status, remove guests
+- **Invite Link Generator** — enter a guest's code and name, generates a ready-to-send message with copy and "Open in Messages" buttons
+- **Ticket Upload & Release** — upload the university-issued ticket (image or PDF) per guest per ceremony; Release button is locked until a ticket is uploaded
+- **Photo Management** — view all uploaded photos in a grid, delete individual photos
 
 ---
 
-## File structure
+## File Structure
 
 ```
 paris-graduation-2026/
 ├── index.html          ← main site
-├── about.html          ← about Paris page
+├── about.html          ← about me page
+├── books.html          ← my reading list
 ├── poster.pdf          ← mastery project poster
-├── firestore.rules     ← Firestore security rules
+├── firestore.rules     ← firestore security rules
 ├── README.md
 ├── .gitignore
 ├── css/
 │   └── style.css
 ├── js/
 │   ├── app.js          ← all main site logic
-│   └── firebase.js     ← Firebase config
+│   └── firebase.js     ← firebase config
 └── admin/
     └── index.html      ← admin panel
 ```
@@ -68,10 +84,10 @@ paris-graduation-2026/
 3. Enable **Storage** (requires Blaze plan)
 4. Go to **Project Settings → Your apps → Web** and copy the config into `js/firebase.js`
 
-### 2. Firestore rules
+### 2. Firestore Rules
 Copy the contents of `firestore.rules` into **Firebase Console → Firestore → Rules** and publish.
 
-### 3. Storage rules
+### 3. Storage Rules
 In **Firebase Console → Storage → Rules**, paste:
 ```
 rules_version = '2';
@@ -107,7 +123,7 @@ Then run:
 gcloud storage buckets update gs://paris-graduation-2026.firebasestorage.app --cors-file=cors.json
 ```
 
-### 5. Admin password
+### 5. Admin Password
 The admin password is hashed with SHA-256. To change it:
 ```bash
 echo -n "yournewpassword" | sha256sum
@@ -121,50 +137,35 @@ Replace the `ADMIN_PASSWORD_HASH` value in `admin/index.html`.
 
 ---
 
-## Guest management workflow
+## Guest Management Workflow
 
-### Adding guests
+### Adding Guests
 1. Go to `/admin/` and log in
-2. Enter the guest's name and relationship, click **Generate invite**
+2. Enter the guest's name, relationship, and ceremony assignment (`april30`, `may2`, or `both`)
 3. Send the generated code using the **Invite link generator**
 
-### RSVP deadline
+### RSVP Deadline and Caps
 Set in `js/app.js`:
 ```js
-const RSVP_DEADLINE = new Date("2026-04-20T23:59:59-04:00");
+const RSVP_DEADLINE = new Date("2026-04-28T23:59:59-04:00");
+const CEREMONY_CAPS = { april30: 10, may2: 6 };
 ```
 
-### Releasing tickets
+### Releasing Tickets
 1. Receive official tickets from UMSI
-2. In the admin panel, click **Upload ticket** next to each confirmed guest
+2. In the admin panel, click **Upload ticket** next to each confirmed guest (per ceremony for "both" guests)
 3. Click **Release** — the guest will see their ticket in the My Ticket tab
 
 ---
 
-## Filling in placeholders
-
-Search `Details coming soon` in `index.html` for:
-- Dinner reservation details
-- Parking & transport info
-- Dress code
-
-Search `Add` in `about.html` for:
-- Bio text
-- Undergraduate education
-- Work experience
-- Skills
-- Future plans
+## Tech Stack
+- **Frontend**: vanilla HTML, CSS, JavaScript (ES modules)
+- **Database**: Firebase Firestore
+- **Storage**: Firebase Storage
+- **Hosting**: GitHub Pages
+- **Fonts**: Cormorant Garamond, DM Sans, DM Mono (Google Fonts)
+- **QR codes**: QRCode.js
 
 ---
 
-## Tech stack
-- **Frontend** — vanilla HTML, CSS, JavaScript (ES modules)
-- **Database** — Firebase Firestore
-- **Storage** — Firebase Storage
-- **Hosting** — GitHub Pages
-- **Fonts** — Cormorant Garamond, DM Sans, DM Mono (Google Fonts)
-- **QR codes** — QRCode.js
-
----
-
-*Built with love for Paris's graduation. Go Blue! 〽️*
+*Built with love. Go Blue! 〽️*
