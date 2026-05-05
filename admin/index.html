@@ -276,7 +276,7 @@
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getStorage, ref, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
   import {
-    signInWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider,
+    signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
     signOut, onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
  
@@ -315,13 +315,6 @@
     }
   });
 
-  getRedirectResult(auth).catch(err => {
-    console.error("Redirect result error:", err.code, err.message);
-    const msgEl = document.getElementById("admin-login-err");
-    msgEl.textContent = err.message;
-    msgEl.classList.remove("hidden");
-  });
-
   window.adminLogin = async function() {
     const email = document.getElementById("admin-email").value.trim();
     const pass  = document.getElementById("admin-pass").value;
@@ -338,8 +331,16 @@
     }
   };
 
-  window.adminGoogleLogin = function() {
-    signInWithRedirect(auth, new GoogleAuthProvider());
+  window.adminGoogleLogin = async function() {
+    const msgEl = document.getElementById("admin-login-err");
+    msgEl.classList.add("hidden");
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (err) {
+      console.error("Google login error:", err.code, err.message);
+      msgEl.textContent = err.message;
+      msgEl.classList.remove("hidden");
+    }
   };
 
   window.adminSignOut = async function() { await signOut(auth); };
