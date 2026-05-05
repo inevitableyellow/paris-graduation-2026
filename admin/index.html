@@ -298,9 +298,25 @@
     document.getElementById("admin-panel").classList.add("hidden");
   }
 
-  onAuthStateChanged(auth, user => { user ? showPanel() : showLogin(); });
+  const ADMIN_EMAIL = "pmheard@umich.edu";
+
+  onAuthStateChanged(auth, async user => {
+    if (user) {
+      if (user.email !== ADMIN_EMAIL) {
+        await signOut(auth);
+        const msgEl = document.getElementById("admin-login-err");
+        msgEl.textContent = "This Google account is not authorized.";
+        msgEl.classList.remove("hidden");
+        return;
+      }
+      showPanel();
+    } else {
+      showLogin();
+    }
+  });
 
   getRedirectResult(auth).catch(err => {
+    console.error("Redirect result error:", err.code, err.message);
     const msgEl = document.getElementById("admin-login-err");
     msgEl.textContent = err.message;
     msgEl.classList.remove("hidden");
